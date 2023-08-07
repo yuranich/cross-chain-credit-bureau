@@ -5,7 +5,8 @@ interface ICreditBureau {
 	enum Status {
 		OPENED,
 		REPAID,
-		DEFAULTED
+		DEFAULTED,
+		DELAYED
 	}
 
 	enum Collateral {
@@ -15,16 +16,15 @@ interface ICreditBureau {
 	}
 
 	struct Credit {
-		Collateral collateral;
 		uint256 fromDate;
 		uint256 toDate;
 		uint256 amount;
 		address token;
-		uint256 chain;
+		uint256 amountRepaid;
 	}
 
 	struct Report {
-		string creditProvider;
+		// string creditProvider;
 		address reporter;
 		address borrower;
 		Status status;
@@ -32,4 +32,6 @@ interface ICreditBureau {
 		uint256 timestamp;
 		bytes data;
 	}
+
+	function submitCreditReport(Report memory report) external;
 }

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
+pragma abicoder v2;
 
 import "./interfaces/ICreditBureau.sol";
 import "hardhat/console.sol";
@@ -53,15 +54,15 @@ contract CreditBureau is ICreditBureau {
 		lengthOfCreditHistory = (latestReport - earliestReport) / 1 days;
 	}
 
-	function submitCreditReport(Report memory report, address user) external {
+	function submitCreditReport(Report memory report) external {
 		console.log(
 			"Report: %s %s %s",
-			report.creditProvider,
+			report.borrower,
 			report.reporter,
 			report.timestamp
 		);
 		if (!verify(report)) revert InvalidReport();
-		_addReport(report, msg.sender, user);
+		_addReport(report, msg.sender, report.borrower);
 	}
 
 	function _addReport(
