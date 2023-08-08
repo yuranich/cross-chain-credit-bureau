@@ -14,7 +14,7 @@ async function main() {
     )
 
     const schema =
-        "address reporter, uint256 creditID, address borrower, uint256 fromDate, uint256 toDate,uint256 amount, address token, uint256 amountRepaid"
+        "address reporter, address borrower, uint8 status, uint256 creditId, uint256 fromDate, uint256 toDate, uint256 amount, address token, uint256 amountRepaid"
     const revocable = true
 
     const resolver = "0x690716b83FbFF443847cB024617532330075416A"

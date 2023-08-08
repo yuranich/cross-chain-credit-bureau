@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
-import { NetAddrs } from "../scripts/addresses.config"
+import { NetAddrs } from "../config/addresses.config"
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and

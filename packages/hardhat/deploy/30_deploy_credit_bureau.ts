@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
+import { NetAddrs } from "../config/addresses.config"
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and
@@ -20,19 +21,30 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   */
     const { deployer } = await hre.getNamedAccounts()
     const { deploy } = hre.deployments
+    const easAddr = NetAddrs[hre.network.name].EAS
+    const schemaUid = NetAddrs[hre.network.name].CREDIT_REPORT_SCHEMA
 
     await deploy("CreditBureau", {
         from: deployer,
         // Contract constructor arguments
-        args: [],
+        args: [easAddr, schemaUid],
         log: true,
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
         autoMine: true,
     })
 
-    // Get the deployed contract
-    // const yourContract = await hre.ethers.getContract("YourContract", deployer);
+    const bureau = await hre.ethers.getContract("CreditBureau", deployer)
+
+    await deploy("UncollateralizedLenderStub", {
+        from: deployer,
+        // Contract constructor arguments
+        args: [bureau.address],
+        log: true,
+        // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+        // automatically mining the contract deployment transaction. There is no effect on live networks.
+        autoMine: true,
+    })
 }
 
 export default deployYourContract

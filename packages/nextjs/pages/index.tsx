@@ -17,7 +17,7 @@ const Home: NextPage = () => {
       <div className="flex items-center flex-col flex-grow pt-10">
         <div>
           <IDKitWidget
-            app_id="app_GBkZ1KlVUdFTjeMXKlVUdFT" // obtained from the Developer Portal
+            app_id={process.env.NEXT_PUBLIC_APP_ID!} // obtained from the Developer Portal
             action="vote_1" // this is your action name from the Developer Portal
             onSuccess={onSuccess} // callback when the modal is closed
             handleVerify={handleVerify} // optional callback when the proof is received

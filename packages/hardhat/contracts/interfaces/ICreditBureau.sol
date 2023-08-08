@@ -16,6 +16,7 @@ interface ICreditBureau {
 	}
 
 	struct Credit {
+		uint256 id;
 		uint256 fromDate;
 		uint256 toDate;
 		uint256 amount;

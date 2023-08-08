@@ -15,7 +15,7 @@ async function main() {
     schemaRegistry.connect(wallet)
 
     const schema =
-        "address reporter, uint256 creditID, address borrower, uint256 fromDate, uint256 toDate,uint256 amount, address token, uint256 amountRepaid"
+        "address reporter, address borrower, uint8 status, uint256 creditId, uint256 fromDate, uint256 toDate, uint256 amount, address token, uint256 amountRepaid"
 
     const revocable = true
 
@@ -24,16 +24,16 @@ async function main() {
 
     const transaction = await schemaRegistry.register({
         schema,
-        // resolverAddress,
+        resolverAddress: "0x690716b83FbFF443847cB024617532330075416A",
         revocable,
     })
     console.log(`tx: ${JSON.stringify(transaction)}`)
 
     // Optional: Wait for transaction to be validated
-    const rec = await transaction.tx.wait(1)
+    const rec = await transaction.wait(1)
     console.log(`tx rec: ${JSON.stringify(rec)}`)
 
-    const created = await schemaRegistry.getSchema({ uid: (await rec.getResult()) || "sdfs" })
+    const created = await schemaRegistry.getSchema({ uid: rec })
     console.log(`created schema: ${JSON.stringify(created)}`)
 }
 

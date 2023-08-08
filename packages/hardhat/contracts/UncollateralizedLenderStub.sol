@@ -24,7 +24,7 @@ contract UncollateralizedLenderStub {
 
 	function lend(address token, uint256 amount) external {
 		uint8 dec = ERC20(token).decimals();
-		if (dec * 1000 < amount) revert LIMIT_EXCEEDED(dec * 1000, amount);
+		if (1000 ** dec < amount) revert LIMIT_EXCEEDED(1000 ** dec, amount);
 
 		console.log(
 			"Lending token %s amount %s to %s",
@@ -33,6 +33,7 @@ contract UncollateralizedLenderStub {
 			msg.sender
 		);
 		ICreditBureau.Credit memory created = ICreditBureau.Credit(
+			0,
 			block.timestamp,
 			block.timestamp + defaultPeriod,
 			amount,
@@ -59,7 +60,16 @@ contract UncollateralizedLenderStub {
 		emit Repaid(msg.sender, amount, credits[msg.sender].token);
 
 		if (credits[msg.sender].amountRepaid >= credits[msg.sender].amount) {
-			// report
+			bureau.submitCreditReport(
+				ICreditBureau.Report(
+					address(this),
+					msg.sender,
+					getStatus(credits[msg.sender]),
+					credits[msg.sender],
+					block.timestamp,
+					""
+				)
+			);
 		}
 	}
 
