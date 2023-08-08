@@ -3,6 +3,7 @@ pragma solidity ^0.8.19;
 pragma abicoder v2;
 
 import { IEAS, AttestationRequest, AttestationRequestData } from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
+import { NO_EXPIRATION_TIME, EMPTY_UID } from "@ethereum-attestation-service/eas-contracts/contracts/Common.sol";
 import "./interfaces/ICreditBureau.sol";
 import "hardhat/console.sol";
 
@@ -11,14 +12,18 @@ contract CreditBureau is ICreditBureau {
 
 	event CreditReportAdded(address indexed reporter, address indexed user);
 
+	error InvalidEAS();
 	error InvalidReport();
 
-	IEAS eas;
-	bytes32 schema_uid;
+	IEAS private immutable i_eas;
+	bytes32 private immutable i_schema_uid;
 
 	constructor(IEAS _eas, bytes32 _schema_uid) {
-		eas = _eas;
-		schema_uid = _schema_uid;
+		if (address(_eas) == address(0)) {
+			revert InvalidEAS();
+		}
+		i_eas = _eas;
+		i_schema_uid = _schema_uid;
 	}
 
 	function verify(Report memory report) public returns (bool) {
@@ -100,10 +105,17 @@ contract CreditBureau is ICreditBureau {
 			report.credit.token,
 			report.credit.amountRepaid
 		);
-		bytes32 att_uid = eas.attest(
+		bytes32 att_uid = i_eas.attest(
 			AttestationRequest(
-				schema_uid,
-				AttestationRequestData(report.borrower, 0, true, "0x", data, 0)
+				i_schema_uid,
+				AttestationRequestData(
+					address(0),
+					NO_EXPIRATION_TIME,
+					true,
+					EMPTY_UID,
+					data,
+					0
+				)
 			)
 		);
 		console.logBytes32(att_uid);
