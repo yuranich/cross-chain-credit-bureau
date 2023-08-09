@@ -45,6 +45,7 @@ contract UncollateralizedLenderStub {
 
 		bureau.submitCreditReport(
 			ICreditBureau.Report(
+				0,
 				address(this),
 				msg.sender,
 				getStatus(created),
@@ -62,6 +63,7 @@ contract UncollateralizedLenderStub {
 		if (credits[msg.sender].amountRepaid >= credits[msg.sender].amount) {
 			bureau.submitCreditReport(
 				ICreditBureau.Report(
+					0,
 					address(this),
 					msg.sender,
 					getStatus(credits[msg.sender]),

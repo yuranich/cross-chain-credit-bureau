@@ -9,12 +9,6 @@ interface ICreditBureau {
 		DELAYED
 	}
 
-	enum Collateral {
-		UNCOLLATERALISED,
-		COLLATERALISED,
-		OVERCOLLATERALISED
-	}
-
 	struct Credit {
 		uint256 id;
 		uint256 fromDate;
@@ -25,7 +19,7 @@ interface ICreditBureau {
 	}
 
 	struct Report {
-		// string creditProvider;
+		uint256 reportId;
 		address reporter;
 		address borrower;
 		Status status;
@@ -34,5 +28,5 @@ interface ICreditBureau {
 		bytes data;
 	}
 
-	function submitCreditReport(Report memory report) external;
+	function submitCreditReport(Report memory report) external payable;
 }

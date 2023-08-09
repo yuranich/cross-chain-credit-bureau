@@ -4,27 +4,32 @@ import { SchemaRegistry } from "@ethereum-attestation-service/eas-sdk"
 import { ethers, Signer, Wallet } from "ethers"
 import hre from "hardhat"
 
-const schemaRegistryContractAddress = "0xA7b39296258348C78294F95B872b282326A97BDF"
+import { NetAddrs } from "../config/addresses.config"
 
-const hhFirstKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+// const schemaRegistryContractAddress = "0xA7b39296258348C78294F95B872b282326A97BDF"
+
+// const hhFirstKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 
 async function main() {
-    const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress)
+    const [deployer] = await hre.ethers.getSigners()
+    console.log("Calling contract with the account: ", deployer.address)
 
-    const wallet = new ethers.Wallet(hhFirstKey, new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545"))
-    schemaRegistry.connect(wallet)
+    const registryAddr = NetAddrs[hre.network.name].SCHEMA_REGISTRY
+    const resolverAddress = NetAddrs[hre.network.name].SCHEMA_RESOLVER || ethers.constants.AddressZero
+
+    const schemaRegistry = new SchemaRegistry(registryAddr)
+
+    // const wallet = new ethers.Wallet(hhFirstKey, new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545"))
+    schemaRegistry.connect(deployer)
 
     const schema =
         "address reporter, address borrower, uint8 status, uint256 creditId, uint256 fromDate, uint256 toDate, uint256 amount, address token, uint256 amountRepaid"
 
     const revocable = true
 
-    // const uid = await schemaRegistry.contract.callStatic.register({ schema, revocable });
-    // console.log("suggested uid: ", uid);
-
     const transaction = await schemaRegistry.register({
         schema,
-        resolverAddress: "0x690716b83FbFF443847cB024617532330075416A",
+        resolverAddress,
         revocable,
     })
     console.log(`tx: ${JSON.stringify(transaction)}`)

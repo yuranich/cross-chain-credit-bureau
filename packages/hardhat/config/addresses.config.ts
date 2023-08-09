@@ -1,6 +1,7 @@
 export interface NetworkAddresses {
     EAS: string
     SCHEMA_REGISTRY: string
+    SCHEMA_RESOLVER: string
     CREDIT_REPORT_SCHEMA: string
     WORLD_ID_ROUTER: string
     LZ_CHAIN_ID: number
@@ -11,6 +12,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
     hardhat: {
         EAS: "0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587",
         SCHEMA_REGISTRY: "0xA7b39296258348C78294F95B872b282326A97BDF",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "0x5ca43ccb5700beda1908287fdd17060a1cdc3419ea8f0db0eb018a1fcbc01e49",
         WORLD_ID_ROUTER: "0x163b09b4fe21177c455d850bd815b6d583732432",
         LZ_CHAIN_ID: 101,
@@ -19,6 +21,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
     localhost: {
         EAS: "0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587",
         SCHEMA_REGISTRY: "0xA7b39296258348C78294F95B872b282326A97BDF",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "0x5ca43ccb5700beda1908287fdd17060a1cdc3419ea8f0db0eb018a1fcbc01e49",
         WORLD_ID_ROUTER: "0x163b09b4fe21177c455d850bd815b6d583732432",
         LZ_CHAIN_ID: 101,
@@ -27,6 +30,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
     sepolia: {
         EAS: "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
         SCHEMA_REGISTRY: "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "0x5ca43ccb5700beda1908287fdd17060a1cdc3419ea8f0db0eb018a1fcbc01e49",
         WORLD_ID_ROUTER: "not available",
         LZ_CHAIN_ID: 10161,
@@ -35,15 +39,17 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
     goerli: {
         EAS: "not available",
         SCHEMA_REGISTRY: "not available",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "",
         WORLD_ID_ROUTER: "0x05C4AE6bC33e6308004a47EbFa99E5Abb4133f86",
         LZ_CHAIN_ID: 10121,
         LZ_ENDPOINT: "0xbfD2135BFfbb0B5378b56643c2Df8a87552Bfa23",
     },
-    op_goerli: {
+    optimismGoerli: {
         EAS: "0x4200000000000000000000000000000000000021",
         SCHEMA_REGISTRY: "0x4200000000000000000000000000000000000020",
-        CREDIT_REPORT_SCHEMA: "",
+        SCHEMA_RESOLVER: "0x5db6384f8bDABC36fe6f00Ac375E2c07D0d2456c",
+        CREDIT_REPORT_SCHEMA: "0x91a486d326f034fc904911c4c01dafb1b931b4ac469ebdf2fab0e2f8d6cd49cc",
         WORLD_ID_ROUTER: "0xFc1315089316FcFe586a8E0a92873c258De8aaC1",
         LZ_CHAIN_ID: 10132,
         LZ_ENDPOINT: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
@@ -51,14 +57,16 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
     base_testnet: {
         EAS: "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A",
         SCHEMA_REGISTRY: "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "",
         WORLD_ID_ROUTER: "not available",
         LZ_CHAIN_ID: 10160,
         LZ_ENDPOINT: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
     },
-    op_mainnet: {
+    optimism: {
         EAS: "0x4200000000000000000000000000000000000021",
         SCHEMA_REGISTRY: "0x4200000000000000000000000000000000000020",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "",
         WORLD_ID_ROUTER: "0x57f928158C3EE7CDad1e4D8642503c4D0201f611",
         LZ_CHAIN_ID: 111,
@@ -67,6 +75,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
     base_mainnet: {
         EAS: "not available",
         SCHEMA_REGISTRY: "not available",
+        SCHEMA_RESOLVER: "",
         CREDIT_REPORT_SCHEMA: "",
         WORLD_ID_ROUTER: "not available",
         LZ_CHAIN_ID: 184,
