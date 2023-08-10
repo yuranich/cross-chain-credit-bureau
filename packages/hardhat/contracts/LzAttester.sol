@@ -5,7 +5,6 @@ pragma abicoder v2;
 import { IEAS, AttestationRequest, AttestationRequestData } from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import { NO_EXPIRATION_TIME, EMPTY_UID } from "@ethereum-attestation-service/eas-contracts/contracts/Common.sol";
 import "@layerzerolabs/solidity-examples/contracts/lzApp/NonblockingLzApp.sol";
-import "./interfaces/ICreditBureau.sol";
 import "hardhat/console.sol";
 
 contract LzAttester is NonblockingLzApp {
@@ -17,7 +16,18 @@ contract LzAttester is NonblockingLzApp {
 
 	bytes32[] public uids;
 
-	event ReportAttested(bytes32 indexed attUid, uint16 indexed originChain);
+	event ActionAttested(bytes32 indexed attUid, uint16 indexed originChain);
+
+	struct AttestationRecord {
+		uint64 actionId;
+		uint8 action;
+		address reporter;
+		address borrower;
+		uint256 fromDate;
+		uint256 toDate;
+		uint256 amount;
+		address token;
+	}
 
 	constructor(
 		IEAS _eas,
@@ -52,7 +62,7 @@ contract LzAttester is NonblockingLzApp {
 		}
 		bytes32 uid = _attest(_payload);
 		uids.push(uid);
-		emit ReportAttested(uid, _srcChainId);
+		emit ActionAttested(uid, _srcChainId);
 	}
 
 	function estimateFees(
@@ -70,20 +80,19 @@ contract LzAttester is NonblockingLzApp {
 	}
 
 	function attestCrossChain(
-		ICreditBureau.Report memory report,
+		AttestationRecord calldata record,
 		uint16 _dstChainId
 	) public payable {
-		console.log("attesting report: %s", report.reporter);
+		console.log("attesting record: %s", record.actionId);
 		bytes memory data = abi.encode(
-			report.reporter,
-			report.borrower,
-			uint8(report.status),
-			report.credit.id,
-			report.credit.fromDate,
-			report.credit.toDate,
-			report.credit.amount,
-			report.credit.token,
-			report.credit.amountRepaid
+			record.actionId,
+			record.action,
+			record.reporter,
+			record.borrower,
+			record.fromDate,
+			record.toDate,
+			record.amount,
+			record.token
 		);
 		_lzSend(
 			_dstChainId,

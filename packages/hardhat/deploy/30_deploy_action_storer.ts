@@ -8,7 +8,7 @@ import { NetAddrs } from "../config/addresses.config"
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const loanActionStorer: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -25,7 +25,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
     const attester = await hre.ethers.getContract("LzAttester", deployer)
 
-    await deploy("CreditBureau", {
+    await deploy("LoanActionStorer", {
         from: deployer,
         // Contract constructor arguments
         args: [attester.address, targetChainId],
@@ -35,12 +35,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
         autoMine: true,
     })
 
-    const bureau = await hre.ethers.getContract("CreditBureau", deployer)
+    const storer = await hre.ethers.getContract("LoanActionStorer", deployer)
 
     await deploy("UncollateralizedLenderStub", {
         from: deployer,
         // Contract constructor arguments
-        args: [bureau.address],
+        args: [storer.address],
         log: true,
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -48,8 +48,8 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     })
 }
 
-export default deployYourContract
+export default loanActionStorer
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["CreditBureau"]
+loanActionStorer.tags = ["LoanActionStorer"]

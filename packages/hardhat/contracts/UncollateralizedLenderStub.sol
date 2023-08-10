@@ -4,11 +4,21 @@ pragma abicoder v2;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./interfaces/ICreditBureau.sol";
+import "./interfaces/ILoanActionStorer.sol";
 
 contract UncollateralizedLenderStub {
-	ICreditBureau internal bureau;
-	mapping(address borrower => ICreditBureau.Credit) credits;
+	struct Credit {
+		uint256 id;
+		uint256 fromDate;
+		uint256 toDate;
+		uint256 amount;
+		address token;
+		uint256 amountRepaid;
+	}
+
+	ILoanActionStorer internal immutable i_storer;
+	mapping(address borrower => Credit[]) credits;
+	uint256 internal total;
 
 	uint256 defaultPeriod = 30 days;
 	uint256 maxCap = 1000;
@@ -18,8 +28,8 @@ contract UncollateralizedLenderStub {
 	event Lent(address borrower, uint256 amount, address token);
 	event Repaid(address borrower, uint256 amount, address token);
 
-	constructor(ICreditBureau _bureau) {
-		bureau = _bureau;
+	constructor(ILoanActionStorer _storer) {
+		i_storer = _storer;
 	}
 
 	function lend(address token, uint256 amount) external {
@@ -32,68 +42,72 @@ contract UncollateralizedLenderStub {
 			amount,
 			msg.sender
 		);
-		ICreditBureau.Credit memory created = ICreditBureau.Credit(
-			0,
+		Credit memory created = Credit(
+			total,
 			block.timestamp,
 			block.timestamp + defaultPeriod,
 			amount,
 			token,
 			0
 		);
-		credits[msg.sender] = created;
+		credits[msg.sender].push(created);
+		total++;
 		emit Lent(msg.sender, amount, token);
 
-		bureau.submitCreditReport(
-			ICreditBureau.Report(
+		i_storer.reportLoanAction(
+			ILoanActionStorer.Loan(
 				0,
-				address(this),
-				msg.sender,
-				getStatus(created),
-				created,
-				block.timestamp,
-				""
-			)
+				created.fromDate,
+				created.toDate,
+				created.amount,
+				created.token,
+				msg.sender
+			),
+			ILoanActionStorer.Action.OPENED
 		);
 	}
 
 	function repay(uint256 amount) external {
-		credits[msg.sender].amountRepaid += amount;
-		emit Repaid(msg.sender, amount, credits[msg.sender].token);
+		Credit storage current = credits[msg.sender][
+			credits[msg.sender].length - 1
+		];
+		current.amountRepaid += amount;
+		emit Repaid(msg.sender, amount, current.token);
 
-		if (credits[msg.sender].amountRepaid >= credits[msg.sender].amount) {
-			bureau.submitCreditReport(
-				ICreditBureau.Report(
+		if (current.amountRepaid >= current.amount) {
+			i_storer.reportLoanAction(
+				ILoanActionStorer.Loan(
 					0,
-					address(this),
-					msg.sender,
-					getStatus(credits[msg.sender]),
-					credits[msg.sender],
-					block.timestamp,
-					""
-				)
+					current.fromDate,
+					current.toDate,
+					current.amount,
+					current.token,
+					msg.sender
+				),
+				getAction(current)
 			);
 		}
 	}
 
-	function getStatus(
-		ICreditBureau.Credit memory cred
-	) internal returns (ICreditBureau.Status status) {
+	function getAction(
+		Credit memory cred
+	) internal returns (ILoanActionStorer.Action action) {
 		if (cred.amount > cred.amountRepaid && cred.toDate < block.timestamp) {
 			console.log("time is out, credit is not repaid!");
-			status = ICreditBureau.Status.DEFAULTED;
+			action = ILoanActionStorer.Action.DEFAULTED;
 		} else if (
 			cred.amount > cred.amountRepaid && cred.toDate > block.timestamp
 		) {
 			console.log("credit is opened!");
-			status = ICreditBureau.Status.OPENED;
+			action = ILoanActionStorer.Action.OPENED;
 		} else if (
 			cred.amount <= cred.amountRepaid && cred.toDate > block.timestamp
 		) {
 			console.log("credit is fully repaid!");
-			status = ICreditBureau.Status.REPAID;
+			action = ILoanActionStorer.Action.REPAID;
 		} else {
 			console.log("credit is fully repaid but late!");
-			status = ICreditBureau.Status.DELAYED;
+			action = ILoanActionStorer.Action.DELAYED;
 		}
 	}
 }
