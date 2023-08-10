@@ -43,7 +43,7 @@ contract LoanActionStorer is ILoanActionStorer {
 			loan.amount
 		);
 		LoanAction memory loanAction = _saveAction(loan, action, msg.sender);
-		i_attester.attestCrossChain{ value: msg.value }(
+		i_attester.attestOnRemoteChain{ value: msg.value }(
 			LzAttester.AttestationRecord(
 				loanAction.actionId,
 				uint8(loanAction.action),

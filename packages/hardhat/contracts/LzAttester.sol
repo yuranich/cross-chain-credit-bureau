@@ -75,11 +75,13 @@ contract LzAttester is NonblockingLzApp {
 				address(this),
 				_payload,
 				false,
-				"0x00010000000000000000000000000000000000000000000000000000000000030d40"
+				bytes(
+					"0x00010000000000000000000000000000000000000000000000000000000000030d40"
+				)
 			);
 	}
 
-	function attestCrossChain(
+	function attestOnRemoteChain(
 		AttestationRecord calldata record,
 		uint16 _dstChainId
 	) public payable {
@@ -120,6 +122,23 @@ contract LzAttester is NonblockingLzApp {
 		);
 		console.logBytes32(att_uid);
 		return att_uid;
+	}
+
+	function attestDirect(AttestationRecord calldata record) public payable {
+		console.log("attesting record: %s", record.actionId);
+		bytes memory data = abi.encode(
+			record.actionId,
+			record.action,
+			record.reporter,
+			record.borrower,
+			record.fromDate,
+			record.toDate,
+			record.amount,
+			record.token
+		);
+		bytes32 uid = _attest(data);
+		uids.push(uid);
+		emit ActionAttested(uid, uint16(block.chainid));
 	}
 
 	function getLastUid() public view returns (bytes32) {

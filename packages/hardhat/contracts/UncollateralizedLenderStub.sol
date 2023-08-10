@@ -32,7 +32,7 @@ contract UncollateralizedLenderStub {
 		i_storer = _storer;
 	}
 
-	function lend(address token, uint256 amount) external {
+	function lend(address token, uint256 amount) external payable {
 		uint8 dec = ERC20(token).decimals();
 		if (1000 ** dec < amount) revert LIMIT_EXCEEDED(1000 ** dec, amount);
 
@@ -54,7 +54,7 @@ contract UncollateralizedLenderStub {
 		total++;
 		emit Lent(msg.sender, amount, token);
 
-		i_storer.reportLoanAction(
+		i_storer.reportLoanAction{ value: msg.value }(
 			ILoanActionStorer.Loan(
 				0,
 				created.fromDate,
@@ -91,7 +91,7 @@ contract UncollateralizedLenderStub {
 
 	function getAction(
 		Credit memory cred
-	) internal returns (ILoanActionStorer.Action action) {
+	) internal view returns (ILoanActionStorer.Action action) {
 		if (cred.amount > cred.amountRepaid && cred.toDate < block.timestamp) {
 			console.log("time is out, credit is not repaid!");
 			action = ILoanActionStorer.Action.DEFAULTED;

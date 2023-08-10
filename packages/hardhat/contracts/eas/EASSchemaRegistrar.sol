@@ -29,6 +29,7 @@ contract EASSchemaRegistrar {
 	}
 
 	function getLastUid() public view returns (bytes32) {
+		if (uids.length == 0) return 0;
 		return uids[uids.length - 1];
 	}
 }
