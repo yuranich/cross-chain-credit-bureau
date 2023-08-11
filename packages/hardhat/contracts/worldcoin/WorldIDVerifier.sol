@@ -15,6 +15,8 @@ contract WorldIDVerifier {
 	/// @notice Thrown when attempting to reuse a nullifier
 	error InvalidNullifier();
 
+	event ProofVerified(address indexed signal, uint256 indexed root);
+
 	/// @dev The World ID instance that will be used for verifying proofs
 	IWorldID internal immutable worldId;
 
@@ -76,10 +78,6 @@ contract WorldIDVerifier {
 
 		// Finally, execute your logic here, for example issue a token, NFT, etc...
 		// Make sure to emit some kind of event afterwards!
-		console.log(
-			"Proof successfully verified! Signal: %s; Root: %s",
-			signal,
-			root
-		);
+		emit ProofVerified(signal, root);
 	}
 }

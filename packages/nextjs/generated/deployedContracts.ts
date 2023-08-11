@@ -4,8 +4,79 @@ const contracts = {
       chainId: "420",
       name: "optimismGoerli",
       contracts: {
-        CreditBureau: {
-          address: "0x7F895F980CFff590ca629cBfACbD03eBc0570e9F",
+        EASSchemaRegistrar: {
+          address: "0x7b5351e66A978ecb72669d2aDF932F53ce664EF0",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "contract ISchemaRegistry",
+                  name: "_registry",
+                  type: "address",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              inputs: [],
+              name: "getLastUid",
+              outputs: [
+                {
+                  internalType: "bytes32",
+                  name: "",
+                  type: "bytes32",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "schema",
+                  type: "string",
+                },
+                {
+                  internalType: "contract ISchemaResolver",
+                  name: "resolver",
+                  type: "address",
+                },
+                {
+                  internalType: "bool",
+                  name: "revocable",
+                  type: "bool",
+                },
+              ],
+              name: "register",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "uids",
+              outputs: [
+                {
+                  internalType: "bytes32",
+                  name: "",
+                  type: "bytes32",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+        },
+        LoanActionStorer: {
+          address: "0x97375e5410664E434EE4bD2423Da0E88243DFFbA",
           abi: [
             {
               inputs: [
@@ -16,7 +87,7 @@ const contracts = {
                 },
                 {
                   internalType: "uint16",
-                  name: "_reportStoreChain",
+                  name: "_attestationChain",
                   type: "uint16",
                 },
               ],
@@ -24,13 +95,14 @@ const contracts = {
               type: "constructor",
             },
             {
-              inputs: [],
-              name: "InvalidReport",
-              type: "error",
-            },
-            {
               anonymous: false,
               inputs: [
+                {
+                  indexed: true,
+                  internalType: "uint64",
+                  name: "actionId",
+                  type: "uint64",
+                },
                 {
                   indexed: true,
                   internalType: "address",
@@ -44,7 +116,7 @@ const contracts = {
                   type: "address",
                 },
               ],
-              name: "CreditReportAdded",
+              name: "LoanActionSaved",
               type: "event",
             },
             {
@@ -60,26 +132,16 @@ const contracts = {
                   type: "uint256",
                 },
               ],
-              name: "creditHistory",
+              name: "loanActionHistory",
               outputs: [
                 {
-                  internalType: "uint256",
-                  name: "reportId",
-                  type: "uint256",
+                  internalType: "uint64",
+                  name: "actionId",
+                  type: "uint64",
                 },
                 {
-                  internalType: "address",
-                  name: "reporter",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "borrower",
-                  type: "address",
-                },
-                {
-                  internalType: "enum ICreditBureau.Status",
-                  name: "status",
+                  internalType: "enum ILoanActionStorer.Action",
+                  name: "action",
                   type: "uint8",
                 },
                 {
@@ -110,24 +172,24 @@ const contracts = {
                       type: "address",
                     },
                     {
-                      internalType: "uint256",
-                      name: "amountRepaid",
-                      type: "uint256",
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
                     },
                   ],
-                  internalType: "struct ICreditBureau.Credit",
-                  name: "credit",
+                  internalType: "struct ILoanActionStorer.Loan",
+                  name: "loan",
                   type: "tuple",
+                },
+                {
+                  internalType: "address",
+                  name: "reporter",
+                  type: "address",
                 },
                 {
                   internalType: "uint256",
                   name: "timestamp",
                   type: "uint256",
-                },
-                {
-                  internalType: "bytes",
-                  name: "data",
-                  type: "bytes",
                 },
               ],
               stateMutability: "view",
@@ -139,12 +201,27 @@ const contracts = {
                   components: [
                     {
                       internalType: "uint256",
-                      name: "reportId",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
                       type: "uint256",
                     },
                     {
                       internalType: "address",
-                      name: "reporter",
+                      name: "token",
                       type: "address",
                     },
                     {
@@ -152,155 +229,20 @@ const contracts = {
                       name: "borrower",
                       type: "address",
                     },
-                    {
-                      internalType: "enum ICreditBureau.Status",
-                      name: "status",
-                      type: "uint8",
-                    },
-                    {
-                      components: [
-                        {
-                          internalType: "uint256",
-                          name: "id",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "fromDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "toDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amount",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "address",
-                          name: "token",
-                          type: "address",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amountRepaid",
-                          type: "uint256",
-                        },
-                      ],
-                      internalType: "struct ICreditBureau.Credit",
-                      name: "credit",
-                      type: "tuple",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "timestamp",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "bytes",
-                      name: "data",
-                      type: "bytes",
-                    },
                   ],
-                  internalType: "struct ICreditBureau.Report",
-                  name: "report",
+                  internalType: "struct ILoanActionStorer.Loan",
+                  name: "loan",
                   type: "tuple",
                 },
+                {
+                  internalType: "enum ILoanActionStorer.Action",
+                  name: "action",
+                  type: "uint8",
+                },
               ],
-              name: "submitCreditReport",
+              name: "reportLoanAction",
               outputs: [],
               stateMutability: "payable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  components: [
-                    {
-                      internalType: "uint256",
-                      name: "reportId",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "address",
-                      name: "reporter",
-                      type: "address",
-                    },
-                    {
-                      internalType: "address",
-                      name: "borrower",
-                      type: "address",
-                    },
-                    {
-                      internalType: "enum ICreditBureau.Status",
-                      name: "status",
-                      type: "uint8",
-                    },
-                    {
-                      components: [
-                        {
-                          internalType: "uint256",
-                          name: "id",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "fromDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "toDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amount",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "address",
-                          name: "token",
-                          type: "address",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amountRepaid",
-                          type: "uint256",
-                        },
-                      ],
-                      internalType: "struct ICreditBureau.Credit",
-                      name: "credit",
-                      type: "tuple",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "timestamp",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "bytes",
-                      name: "data",
-                      type: "bytes",
-                    },
-                  ],
-                  internalType: "struct ICreditBureau.Report",
-                  name: "report",
-                  type: "tuple",
-                },
-              ],
-              name: "verify",
-              outputs: [
-                {
-                  internalType: "bool",
-                  name: "",
-                  type: "bool",
-                },
-              ],
-              stateMutability: "nonpayable",
               type: "function",
             },
           ],
@@ -666,7 +608,7 @@ const contracts = {
           ],
         },
         LzAttester: {
-          address: "0x645eaefA3dfE93b6140e4AB68113f56Fb1910Ca8",
+          address: "0x36A66528ae0478cFA18867beBa2b590170072718",
           abi: [
             {
               inputs: [
@@ -698,6 +640,25 @@ const contracts = {
               inputs: [],
               name: "SCHEMA_NOT_DEFINED",
               type: "error",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "bytes32",
+                  name: "attUid",
+                  type: "bytes32",
+                },
+                {
+                  indexed: true,
+                  internalType: "uint16",
+                  name: "originChain",
+                  type: "uint16",
+                },
+              ],
+              name: "ActionAttested",
+              type: "event",
             },
             {
               anonymous: false,
@@ -753,25 +714,6 @@ const contracts = {
                 },
               ],
               name: "OwnershipTransferred",
-              type: "event",
-            },
-            {
-              anonymous: false,
-              inputs: [
-                {
-                  indexed: true,
-                  internalType: "bytes32",
-                  name: "attUid",
-                  type: "bytes32",
-                },
-                {
-                  indexed: true,
-                  internalType: "uint16",
-                  name: "originChain",
-                  type: "uint16",
-                },
-              ],
-              name: "ReportAttested",
               type: "event",
             },
             {
@@ -899,9 +841,14 @@ const contracts = {
                 {
                   components: [
                     {
-                      internalType: "uint256",
-                      name: "reportId",
-                      type: "uint256",
+                      internalType: "uint64",
+                      name: "actionId",
+                      type: "uint64",
+                    },
+                    {
+                      internalType: "uint8",
+                      name: "action",
+                      type: "uint8",
                     },
                     {
                       internalType: "address",
@@ -914,60 +861,83 @@ const contracts = {
                       type: "address",
                     },
                     {
-                      internalType: "enum ICreditBureau.Status",
-                      name: "status",
-                      type: "uint8",
-                    },
-                    {
-                      components: [
-                        {
-                          internalType: "uint256",
-                          name: "id",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "fromDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "toDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amount",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "address",
-                          name: "token",
-                          type: "address",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amountRepaid",
-                          type: "uint256",
-                        },
-                      ],
-                      internalType: "struct ICreditBureau.Credit",
-                      name: "credit",
-                      type: "tuple",
-                    },
-                    {
                       internalType: "uint256",
-                      name: "timestamp",
+                      name: "fromDate",
                       type: "uint256",
                     },
                     {
-                      internalType: "bytes",
-                      name: "data",
-                      type: "bytes",
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
                     },
                   ],
-                  internalType: "struct ICreditBureau.Report",
-                  name: "report",
+                  internalType: "struct LzAttester.AttestationRecord",
+                  name: "record",
+                  type: "tuple",
+                },
+              ],
+              name: "attestDirect",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint64",
+                      name: "actionId",
+                      type: "uint64",
+                    },
+                    {
+                      internalType: "uint8",
+                      name: "action",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "address",
+                      name: "reporter",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct LzAttester.AttestationRecord",
+                  name: "record",
                   type: "tuple",
                 },
                 {
@@ -976,7 +946,7 @@ const contracts = {
                   type: "uint16",
                 },
               ],
-              name: "attestCrossChain",
+              name: "attestOnRemoteChain",
               outputs: [],
               stateMutability: "payable",
               type: "function",
@@ -989,9 +959,51 @@ const contracts = {
                   type: "uint16",
                 },
                 {
-                  internalType: "bytes",
-                  name: "_payload",
-                  type: "bytes",
+                  components: [
+                    {
+                      internalType: "uint64",
+                      name: "actionId",
+                      type: "uint64",
+                    },
+                    {
+                      internalType: "uint8",
+                      name: "action",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "address",
+                      name: "reporter",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct LzAttester.AttestationRecord",
+                  name: "record",
+                  type: "tuple",
                 },
               ],
               name: "estimateFees",
@@ -1518,13 +1530,13 @@ const contracts = {
           ],
         },
         UncollateralizedLenderStub: {
-          address: "0x26438b854c7E20B905C9ff813A09aDeF2935fd77",
+          address: "0x94f2fbC690051d63CbDe9F32a0AA8442400fDDdD",
           abi: [
             {
               inputs: [
                 {
-                  internalType: "contract ICreditBureau",
-                  name: "_bureau",
+                  internalType: "contract ILoanActionStorer",
+                  name: "_storer",
                   type: "address",
                 },
               ],
@@ -1612,7 +1624,7 @@ const contracts = {
               ],
               name: "lend",
               outputs: [],
-              stateMutability: "nonpayable",
+              stateMutability: "payable",
               type: "function",
             },
             {
@@ -1631,7 +1643,7 @@ const contracts = {
           ],
         },
         WorldIDVerifier: {
-          address: "0xF50424203bb664733551285E6033646D27DBf132",
+          address: "0xdd98D75b1560deCCcC5DDAe79CB69bE56861a450",
           abi: [
             {
               inputs: [
@@ -1658,6 +1670,25 @@ const contracts = {
               inputs: [],
               name: "InvalidNullifier",
               type: "error",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "signal",
+                  type: "address",
+                },
+                {
+                  indexed: true,
+                  internalType: "uint256",
+                  name: "root",
+                  type: "uint256",
+                },
+              ],
+              name: "ProofVerified",
+              type: "event",
             },
             {
               inputs: [
@@ -1697,343 +1728,8 @@ const contracts = {
       chainId: "11155111",
       name: "sepolia",
       contracts: {
-        CreditBureau: {
-          address: "0xB54B4227d0c2016fFaD2F9Ff6e4E6d197B1700d9",
-          abi: [
-            {
-              inputs: [
-                {
-                  internalType: "contract IEAS",
-                  name: "_eas",
-                  type: "address",
-                },
-                {
-                  internalType: "bytes32",
-                  name: "_schema_uid",
-                  type: "bytes32",
-                },
-              ],
-              stateMutability: "nonpayable",
-              type: "constructor",
-            },
-            {
-              inputs: [],
-              name: "InvalidEAS",
-              type: "error",
-            },
-            {
-              inputs: [],
-              name: "InvalidReport",
-              type: "error",
-            },
-            {
-              anonymous: false,
-              inputs: [
-                {
-                  indexed: true,
-                  internalType: "address",
-                  name: "reporter",
-                  type: "address",
-                },
-                {
-                  indexed: true,
-                  internalType: "address",
-                  name: "user",
-                  type: "address",
-                },
-              ],
-              name: "CreditReportAdded",
-              type: "event",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "user",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "",
-                  type: "uint256",
-                },
-              ],
-              name: "creditHistory",
-              outputs: [
-                {
-                  internalType: "address",
-                  name: "reporter",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "borrower",
-                  type: "address",
-                },
-                {
-                  internalType: "enum ICreditBureau.Status",
-                  name: "status",
-                  type: "uint8",
-                },
-                {
-                  components: [
-                    {
-                      internalType: "uint256",
-                      name: "id",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "fromDate",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "toDate",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "amount",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "address",
-                      name: "token",
-                      type: "address",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "amountRepaid",
-                      type: "uint256",
-                    },
-                  ],
-                  internalType: "struct ICreditBureau.Credit",
-                  name: "credit",
-                  type: "tuple",
-                },
-                {
-                  internalType: "uint256",
-                  name: "timestamp",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bytes",
-                  name: "data",
-                  type: "bytes",
-                },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  components: [
-                    {
-                      internalType: "address",
-                      name: "reporter",
-                      type: "address",
-                    },
-                    {
-                      internalType: "address",
-                      name: "borrower",
-                      type: "address",
-                    },
-                    {
-                      internalType: "enum ICreditBureau.Status",
-                      name: "status",
-                      type: "uint8",
-                    },
-                    {
-                      components: [
-                        {
-                          internalType: "uint256",
-                          name: "id",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "fromDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "toDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amount",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "address",
-                          name: "token",
-                          type: "address",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amountRepaid",
-                          type: "uint256",
-                        },
-                      ],
-                      internalType: "struct ICreditBureau.Credit",
-                      name: "credit",
-                      type: "tuple",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "timestamp",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "bytes",
-                      name: "data",
-                      type: "bytes",
-                    },
-                  ],
-                  internalType: "struct ICreditBureau.Report",
-                  name: "report",
-                  type: "tuple",
-                },
-              ],
-              name: "submitCreditReport",
-              outputs: [],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  components: [
-                    {
-                      internalType: "address",
-                      name: "reporter",
-                      type: "address",
-                    },
-                    {
-                      internalType: "address",
-                      name: "borrower",
-                      type: "address",
-                    },
-                    {
-                      internalType: "enum ICreditBureau.Status",
-                      name: "status",
-                      type: "uint8",
-                    },
-                    {
-                      components: [
-                        {
-                          internalType: "uint256",
-                          name: "id",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "fromDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "toDate",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amount",
-                          type: "uint256",
-                        },
-                        {
-                          internalType: "address",
-                          name: "token",
-                          type: "address",
-                        },
-                        {
-                          internalType: "uint256",
-                          name: "amountRepaid",
-                          type: "uint256",
-                        },
-                      ],
-                      internalType: "struct ICreditBureau.Credit",
-                      name: "credit",
-                      type: "tuple",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "timestamp",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "bytes",
-                      name: "data",
-                      type: "bytes",
-                    },
-                  ],
-                  internalType: "struct ICreditBureau.Report",
-                  name: "report",
-                  type: "tuple",
-                },
-              ],
-              name: "verify",
-              outputs: [
-                {
-                  internalType: "bool",
-                  name: "",
-                  type: "bool",
-                },
-              ],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "_wallet",
-                  type: "address",
-                },
-              ],
-              name: "viewCreditSummary",
-              outputs: [
-                {
-                  internalType: "uint256",
-                  name: "lengthOfCreditHistory",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "earliestReport",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "latestReport",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalOpenCreditLines",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "mostRecentCreditLineOpenDate",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalNumberOfRecords",
-                  type: "uint256",
-                },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-          ],
-        },
         EASSchemaRegistrar: {
-          address: "0x4259e25D2B3dbc6c495f02f4BF1e4408066485C0",
+          address: "0xB29C7D40a00af47a3a64F25F156da7c49A806b23",
           abi: [
             {
               inputs: [
@@ -2103,8 +1799,180 @@ const contracts = {
             },
           ],
         },
+        LoanActionStorer: {
+          address: "0xD690780560b27AE23992A2E88f61De90Ff23b81b",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "contract LzAttester",
+                  name: "_attester",
+                  type: "address",
+                },
+                {
+                  internalType: "uint16",
+                  name: "_attestationChain",
+                  type: "uint16",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "uint64",
+                  name: "actionId",
+                  type: "uint64",
+                },
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "reporter",
+                  type: "address",
+                },
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "user",
+                  type: "address",
+                },
+              ],
+              name: "LoanActionSaved",
+              type: "event",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "user",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "loanActionHistory",
+              outputs: [
+                {
+                  internalType: "uint64",
+                  name: "actionId",
+                  type: "uint64",
+                },
+                {
+                  internalType: "enum ILoanActionStorer.Action",
+                  name: "action",
+                  type: "uint8",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct ILoanActionStorer.Loan",
+                  name: "loan",
+                  type: "tuple",
+                },
+                {
+                  internalType: "address",
+                  name: "reporter",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct ILoanActionStorer.Loan",
+                  name: "loan",
+                  type: "tuple",
+                },
+                {
+                  internalType: "enum ILoanActionStorer.Action",
+                  name: "action",
+                  type: "uint8",
+                },
+              ],
+              name: "reportLoanAction",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+          ],
+        },
         LoggingSchemaResolver: {
-          address: "0x690716b83FbFF443847cB024617532330075416A",
+          address: "0xdDD93F4C071C165d99c5B8A35D5eaCABcF2B75d6",
           abi: [
             {
               inputs: [
@@ -2463,14 +2331,936 @@ const contracts = {
             },
           ],
         },
-        UncollateralizedLenderStub: {
-          address: "0x937690ce201597433892251f67817120D65E66a3",
+        LzAttester: {
+          address: "0xbD2c4832383B1a16EcBa7e682C54A6F773a61FE8",
           abi: [
             {
               inputs: [
                 {
-                  internalType: "contract ICreditBureau",
-                  name: "_bureau",
+                  internalType: "contract IEAS",
+                  name: "_eas",
+                  type: "address",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "_schema_uid",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "address",
+                  name: "_endpoint",
+                  type: "address",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              inputs: [],
+              name: "EAS_NOT_DEFINED",
+              type: "error",
+            },
+            {
+              inputs: [],
+              name: "SCHEMA_NOT_DEFINED",
+              type: "error",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "bytes32",
+                  name: "attUid",
+                  type: "bytes32",
+                },
+                {
+                  indexed: true,
+                  internalType: "uint16",
+                  name: "originChain",
+                  type: "uint16",
+                },
+              ],
+              name: "ActionAttested",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint64",
+                  name: "_nonce",
+                  type: "uint64",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes",
+                  name: "_payload",
+                  type: "bytes",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes",
+                  name: "_reason",
+                  type: "bytes",
+                },
+              ],
+              name: "MessageFailed",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "previousOwner",
+                  type: "address",
+                },
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "newOwner",
+                  type: "address",
+                },
+              ],
+              name: "OwnershipTransferred",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint64",
+                  name: "_nonce",
+                  type: "uint64",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes32",
+                  name: "_payloadHash",
+                  type: "bytes32",
+                },
+              ],
+              name: "RetryMessageSuccess",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "uint16",
+                  name: "_dstChainId",
+                  type: "uint16",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint16",
+                  name: "_type",
+                  type: "uint16",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "_minDstGas",
+                  type: "uint256",
+                },
+              ],
+              name: "SetMinDstGas",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "address",
+                  name: "precrime",
+                  type: "address",
+                },
+              ],
+              name: "SetPrecrime",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "uint16",
+                  name: "_remoteChainId",
+                  type: "uint16",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes",
+                  name: "_path",
+                  type: "bytes",
+                },
+              ],
+              name: "SetTrustedRemote",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "uint16",
+                  name: "_remoteChainId",
+                  type: "uint16",
+                },
+                {
+                  indexed: false,
+                  internalType: "bytes",
+                  name: "_remoteAddress",
+                  type: "bytes",
+                },
+              ],
+              name: "SetTrustedRemoteAddress",
+              type: "event",
+            },
+            {
+              inputs: [],
+              name: "DEFAULT_PAYLOAD_SIZE_LIMIT",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint64",
+                      name: "actionId",
+                      type: "uint64",
+                    },
+                    {
+                      internalType: "uint8",
+                      name: "action",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "address",
+                      name: "reporter",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct LzAttester.AttestationRecord",
+                  name: "record",
+                  type: "tuple",
+                },
+              ],
+              name: "attestDirect",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint64",
+                      name: "actionId",
+                      type: "uint64",
+                    },
+                    {
+                      internalType: "uint8",
+                      name: "action",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "address",
+                      name: "reporter",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct LzAttester.AttestationRecord",
+                  name: "record",
+                  type: "tuple",
+                },
+                {
+                  internalType: "uint16",
+                  name: "_dstChainId",
+                  type: "uint16",
+                },
+              ],
+              name: "attestOnRemoteChain",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "dstChainId",
+                  type: "uint16",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "uint64",
+                      name: "actionId",
+                      type: "uint64",
+                    },
+                    {
+                      internalType: "uint8",
+                      name: "action",
+                      type: "uint8",
+                    },
+                    {
+                      internalType: "address",
+                      name: "reporter",
+                      type: "address",
+                    },
+                    {
+                      internalType: "address",
+                      name: "borrower",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "fromDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "toDate",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "address",
+                      name: "token",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct LzAttester.AttestationRecord",
+                  name: "record",
+                  type: "tuple",
+                },
+              ],
+              name: "estimateFees",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "nativeFee",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "zroFee",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "",
+                  type: "bytes",
+                },
+                {
+                  internalType: "uint64",
+                  name: "",
+                  type: "uint64",
+                },
+              ],
+              name: "failedMessages",
+              outputs: [
+                {
+                  internalType: "bytes32",
+                  name: "",
+                  type: "bytes32",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+              ],
+              name: "forceResumeReceive",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_version",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint16",
+                  name: "_chainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_configType",
+                  type: "uint256",
+                },
+              ],
+              name: "getConfig",
+              outputs: [
+                {
+                  internalType: "bytes",
+                  name: "",
+                  type: "bytes",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "getLastUid",
+              outputs: [
+                {
+                  internalType: "bytes32",
+                  name: "",
+                  type: "bytes32",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_remoteChainId",
+                  type: "uint16",
+                },
+              ],
+              name: "getTrustedRemoteAddress",
+              outputs: [
+                {
+                  internalType: "bytes",
+                  name: "",
+                  type: "bytes",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+              ],
+              name: "isTrustedRemote",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "lzEndpoint",
+              outputs: [
+                {
+                  internalType: "contract ILayerZeroEndpoint",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+                {
+                  internalType: "uint64",
+                  name: "_nonce",
+                  type: "uint64",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_payload",
+                  type: "bytes",
+                },
+              ],
+              name: "lzReceive",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint16",
+                  name: "",
+                  type: "uint16",
+                },
+              ],
+              name: "minDstGasLookup",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+                {
+                  internalType: "uint64",
+                  name: "_nonce",
+                  type: "uint64",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_payload",
+                  type: "bytes",
+                },
+              ],
+              name: "nonblockingLzReceive",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "owner",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "",
+                  type: "uint16",
+                },
+              ],
+              name: "payloadSizeLimitLookup",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "precrime",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "renounceOwnership",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_srcChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_srcAddress",
+                  type: "bytes",
+                },
+                {
+                  internalType: "uint64",
+                  name: "_nonce",
+                  type: "uint64",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_payload",
+                  type: "bytes",
+                },
+              ],
+              name: "retryMessage",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_version",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint16",
+                  name: "_chainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_configType",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_config",
+                  type: "bytes",
+                },
+              ],
+              name: "setConfig",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_dstChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint16",
+                  name: "_packetType",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_minGas",
+                  type: "uint256",
+                },
+              ],
+              name: "setMinDstGas",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_dstChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_size",
+                  type: "uint256",
+                },
+              ],
+              name: "setPayloadSizeLimit",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "_precrime",
+                  type: "address",
+                },
+              ],
+              name: "setPrecrime",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_version",
+                  type: "uint16",
+                },
+              ],
+              name: "setReceiveVersion",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_version",
+                  type: "uint16",
+                },
+              ],
+              name: "setSendVersion",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_remoteChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_path",
+                  type: "bytes",
+                },
+              ],
+              name: "setTrustedRemote",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "_remoteChainId",
+                  type: "uint16",
+                },
+                {
+                  internalType: "bytes",
+                  name: "_remoteAddress",
+                  type: "bytes",
+                },
+              ],
+              name: "setTrustedRemoteAddress",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "newOwner",
+                  type: "address",
+                },
+              ],
+              name: "transferOwnership",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint16",
+                  name: "",
+                  type: "uint16",
+                },
+              ],
+              name: "trustedRemoteLookup",
+              outputs: [
+                {
+                  internalType: "bytes",
+                  name: "",
+                  type: "bytes",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "uids",
+              outputs: [
+                {
+                  internalType: "bytes32",
+                  name: "",
+                  type: "bytes32",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+        },
+        UncollateralizedLenderStub: {
+          address: "0xdc909bF63b3E67453951d2382240BFB57d3c5936",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "contract ILoanActionStorer",
+                  name: "_storer",
                   type: "address",
                 },
               ],
@@ -2558,7 +3348,7 @@ const contracts = {
               ],
               name: "lend",
               outputs: [],
-              stateMutability: "nonpayable",
+              stateMutability: "payable",
               type: "function",
             },
             {
@@ -2570,6 +3360,84 @@ const contracts = {
                 },
               ],
               name: "repay",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ],
+        },
+        WorldIDVerifier: {
+          address: "0xa686Dd438b85d30B4Bb0FFb1A06Fb487667aA1b1",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "contract IWorldID",
+                  name: "_worldId",
+                  type: "address",
+                },
+                {
+                  internalType: "string",
+                  name: "_appId",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "_actionId",
+                  type: "string",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              inputs: [],
+              name: "InvalidNullifier",
+              type: "error",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "signal",
+                  type: "address",
+                },
+                {
+                  indexed: true,
+                  internalType: "uint256",
+                  name: "root",
+                  type: "uint256",
+                },
+              ],
+              name: "ProofVerified",
+              type: "event",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "signal",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "root",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "nullifierHash",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256[8]",
+                  name: "proof",
+                  type: "uint256[8]",
+                },
+              ],
+              name: "verifyAndExecute",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",

@@ -26,6 +26,25 @@ export default [
         type: "error",
     },
     {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "address",
+                name: "signal",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "uint256",
+                name: "root",
+                type: "uint256",
+            },
+        ],
+        name: "ProofVerified",
+        type: "event",
+    },
+    {
         inputs: [
             {
                 internalType: "address",

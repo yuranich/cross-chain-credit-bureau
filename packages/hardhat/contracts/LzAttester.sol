@@ -44,10 +44,14 @@ contract LzAttester is NonblockingLzApp {
 		uint64 _nonce,
 		bytes memory _payload
 	) internal override {
+		address originAddress;
+		assembly {
+			originAddress := mload(add(_srcAddress, 20))
+		}
 		console.log(
 			"receiving from LZ: %s; %s %s",
 			_srcChainId,
-			abi.decode(_srcAddress, (address)),
+			originAddress,
 			_nonce
 		);
 		if (address(i_eas) == address(0)) {
@@ -67,17 +71,28 @@ contract LzAttester is NonblockingLzApp {
 
 	function estimateFees(
 		uint16 dstChainId,
-		bytes memory _payload
+		AttestationRecord calldata record
 	) public view returns (uint nativeFee, uint zroFee) {
+		bytes memory data = abi.encode(
+			record.actionId,
+			record.action,
+			record.reporter,
+			record.borrower,
+			record.fromDate,
+			record.toDate,
+			record.amount,
+			record.token
+		);
+		uint16 version = 1;
+		uint256 value = 400000;
+		bytes memory adapterParams = abi.encodePacked(version, value);
 		return
 			lzEndpoint.estimateFees(
 				dstChainId,
 				address(this),
-				_payload,
+				data,
 				false,
-				bytes(
-					"0x00010000000000000000000000000000000000000000000000000000000000030d40"
-				)
+				adapterParams
 			);
 	}
 
@@ -96,12 +111,15 @@ contract LzAttester is NonblockingLzApp {
 			record.amount,
 			record.token
 		);
+		uint16 version = 1;
+		uint256 value = 400000;
+		bytes memory adapterParams = abi.encodePacked(version, value);
 		_lzSend(
 			_dstChainId,
 			data,
 			payable(msg.sender),
 			address(0x0),
-			bytes(""),
+			adapterParams,
 			msg.value
 		);
 	}

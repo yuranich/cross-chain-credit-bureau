@@ -1,5 +1,9 @@
 import * as dotenv from "dotenv"
 dotenv.config()
+import * as tdly from "@tenderly/hardhat-tenderly"
+tdly.setup({
+    automaticVerifications: false,
+})
 import { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
 import "hardhat-deploy"
@@ -95,6 +99,11 @@ const config: HardhatUserConfig = {
         etherscan: {
             apiKey: `${etherscanApiKey}`,
         },
+    },
+    tenderly: {
+        username: "yuranich", // tenderly username (or organization name)
+        project: "omnichain", // project name
+        privateVerification: false, // if true, contracts will be verified privately, if false, contracts will be verified publicly
     },
 }
 

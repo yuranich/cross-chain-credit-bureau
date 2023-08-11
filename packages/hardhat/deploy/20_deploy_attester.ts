@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
 import { NetAddrs } from "../config/addresses.config"
+import { tenderly } from "hardhat"
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and
@@ -33,6 +34,13 @@ const lzAttester: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
         autoMine: true,
+    })
+
+    const attester = await hre.ethers.getContract("LzAttester", deployer)
+
+    await tenderly.verify({
+        name: "LzAttester",
+        address: attester.address,
     })
 }
 
