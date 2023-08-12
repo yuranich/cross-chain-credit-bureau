@@ -1,6 +1,7 @@
 import { useState } from "react"
 import Link from "next/link"
-import type { VerifyReply } from "./api/verify"
+import { OtherLoan } from "./api/covalent-verify"
+import type { VerifyReply } from "./api/worldcoin-verify"
 import { CredentialType, IDKitWidget } from "@worldcoin/idkit"
 import type { ISuccessResult } from "@worldcoin/idkit"
 import type { NextPage } from "next"
@@ -11,6 +12,7 @@ import { MetaHeader } from "~~/components/MetaHeader"
 const Home: NextPage = () => {
     const { address } = useAccount()
     const [proof, setProof] = useState<ISuccessResult | null>(null)
+    const [noOtherLoan, setNoOtherLoan] = useState<boolean>(false)
 
     const onSuccess = (result: ISuccessResult) => {
         setProof(result)
@@ -27,7 +29,7 @@ const Home: NextPage = () => {
             signal: address,
         }
         console.log("Sending proof to backend for verification:\n", JSON.stringify(reqBody))
-        const res: Response = await fetch("/api/verify", {
+        const res: Response = await fetch("/api/worldcoin-verify", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -39,6 +41,24 @@ const Home: NextPage = () => {
             console.log("Successful response from backend:\n", data) // Log the response from our backend for visibility
         } else {
             throw new Error(`Error code ${res.status} (${data.code}): ${data.detail}` ?? "Unknown error.") // Throw an error if verification fails
+        }
+    }
+
+    const handleCovalent = async () => {
+        const res: Response = await fetch("/api/covalent-verify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: "{}",
+        })
+        if (res.status == 200) {
+            const data: OtherLoan[] = await res.json()
+            console.log("Successful response from backend:\n", data)
+            setNoOtherLoan(true)
+        } else {
+            const error = await res.text()
+            throw new Error(`Error ${res.status} ${error || "Unknown error."}`)
         }
     }
 
@@ -64,7 +84,10 @@ const Home: NextPage = () => {
                         </button>
                     )}
                 </IDKitWidget>
-                <button className="btn primary" onClick={handleLend} disabled={proof == null}>
+                <button className="btn" onClick={handleCovalent}>
+                    No other loan
+                </button>
+                <button className="btn primary" onClick={handleLend} disabled={proof == null || !noOtherLoan}>
                     Lend
                 </button>
                 <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
