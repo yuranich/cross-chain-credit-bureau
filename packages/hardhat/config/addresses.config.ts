@@ -6,6 +6,7 @@ export interface NetworkAddresses {
     WORLD_ID_ROUTER: string
     LZ_CHAIN_ID: number
     LZ_ENDPOINT: string
+    LZ_DEST_CHAIN: number
 }
 
 export const NetAddrs: { [k: string]: NetworkAddresses } = {
@@ -17,6 +18,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "0x163b09b4fe21177c455d850bd815b6d583732432",
         LZ_CHAIN_ID: 101,
         LZ_ENDPOINT: "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
+        LZ_DEST_CHAIN: 0,
     },
     localhost: {
         EAS: "0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587",
@@ -26,6 +28,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "0x163b09b4fe21177c455d850bd815b6d583732432",
         LZ_CHAIN_ID: 101,
         LZ_ENDPOINT: "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
+        LZ_DEST_CHAIN: 0,
     },
     sepolia: {
         EAS: "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
@@ -35,6 +38,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "0x0000000000000000000000000000000000000000",
         LZ_CHAIN_ID: 10161,
         LZ_ENDPOINT: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+        LZ_DEST_CHAIN: 10132,
     },
     goerli: {
         EAS: "not available",
@@ -44,6 +48,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "0x05C4AE6bC33e6308004a47EbFa99E5Abb4133f86",
         LZ_CHAIN_ID: 10121,
         LZ_ENDPOINT: "0xbfD2135BFfbb0B5378b56643c2Df8a87552Bfa23",
+        LZ_DEST_CHAIN: 10132,
     },
     optimismGoerli: {
         EAS: "0x4200000000000000000000000000000000000021",
@@ -53,6 +58,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "0x515f06B36E6D3b707eAecBdeD18d8B384944c87f",
         LZ_CHAIN_ID: 10132,
         LZ_ENDPOINT: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+        LZ_DEST_CHAIN: 10161,
     },
     base_testnet: {
         EAS: "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A",
@@ -62,6 +68,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "not available",
         LZ_CHAIN_ID: 10160,
         LZ_ENDPOINT: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
+        LZ_DEST_CHAIN: 10161,
     },
     optimism: {
         EAS: "0x4200000000000000000000000000000000000021",
@@ -71,6 +78,7 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "0x57f928158C3EE7CDad1e4D8642503c4D0201f611",
         LZ_CHAIN_ID: 111,
         LZ_ENDPOINT: "0x3c2269811836af69497E5F486A85D7316753cf62",
+        LZ_DEST_CHAIN: 10161,
     },
     base_mainnet: {
         EAS: "not available",
@@ -80,5 +88,6 @@ export const NetAddrs: { [k: string]: NetworkAddresses } = {
         WORLD_ID_ROUTER: "not available",
         LZ_CHAIN_ID: 184,
         LZ_ENDPOINT: "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
+        LZ_DEST_CHAIN: 10161,
     },
 }

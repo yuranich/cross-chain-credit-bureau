@@ -25,22 +25,33 @@ const lzAttester: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
     const easAddr = NetAddrs[hre.network.name].EAS
     const schemaUid = NetAddrs[hre.network.name].CREDIT_REPORT_SCHEMA
     const lzEndpoint = NetAddrs[hre.network.name].LZ_ENDPOINT
+    const lzDestChain = NetAddrs[hre.network.name].LZ_DEST_CHAIN
 
-    await deploy("LzAttester", {
+    await deploy("OmnichainLoanAttester", {
         from: deployer,
         // Contract constructor arguments
-        args: [easAddr, schemaUid, lzEndpoint],
+        args: [easAddr, schemaUid, lzEndpoint, lzDestChain],
         log: true,
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
         autoMine: true,
     })
 
-    const attester = await hre.ethers.getContract("LzAttester", deployer)
+    const attester = await hre.ethers.getContract("OmnichainLoanAttester", deployer)
 
     await tenderly.verify({
-        name: "LzAttester",
+        name: "OmnichainLoanAttester",
         address: attester.address,
+    })
+
+    await deploy("UncollateralizedLenderStub", {
+        from: deployer,
+        // Contract constructor arguments
+        args: [attester.address],
+        log: true,
+        // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+        // automatically mining the contract deployment transaction. There is no effect on live networks.
+        autoMine: true,
     })
 }
 
@@ -48,4 +59,4 @@ export default lzAttester
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-lzAttester.tags = ["LzAttester"]
+lzAttester.tags = ["OmnichainLoanAttester"]
