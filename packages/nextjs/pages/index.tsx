@@ -50,7 +50,7 @@ const Home: NextPage = () => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: "{}",
+            body: JSON.stringify({ address }),
         })
         if (res.status == 200) {
             const data: OtherLoan[] = await res.json()

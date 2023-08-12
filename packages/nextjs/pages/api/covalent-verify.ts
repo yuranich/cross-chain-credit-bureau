@@ -32,7 +32,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<OtherL
         res.status(400).send("Borrower address is required")
     }
     Promise.all([processEvents(address, "optimism-goerli"), processEvents(address, "optimism-mainnet")]).then(resps => {
-        res.status(200).send(resps.flatMap(e => e))
+        res.status(200).send(resps.flat(1))
     })
 }
 
@@ -59,6 +59,6 @@ async function processEvents(address: string, network: Chains): Promise<OtherLoa
 }
 
 function checkEvent(address: string, event: LoanEvent): OtherLoan | "unrelated" {
-    console.log(`event topics: ${JSON.stringify(JSON.parse(event.raw_log_topics))}`)
+    console.log(`event topics: ${event.raw_log_topics}`)
     return "unrelated"
 }
