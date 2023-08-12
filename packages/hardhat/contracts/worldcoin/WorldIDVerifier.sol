@@ -15,7 +15,14 @@ contract WorldIDVerifier {
 	/// @notice Thrown when attempting to reuse a nullifier
 	error InvalidNullifier();
 
+	event DuplicateNullifier(uint256 indexed nullifier);
+	event ProofVerificationStarted(
+		address indexed signal,
+		uint256 indexed root
+	);
+	event DuplicateVerificationSuccess(uint256 indexed nullifier);
 	event ProofVerified(address indexed signal, uint256 indexed root);
+	event ProofVerificationFailed();
 
 	/// @dev The World ID instance that will be used for verifying proofs
 	IWorldID internal immutable worldId;
@@ -54,30 +61,44 @@ contract WorldIDVerifier {
 		uint256 nullifierHash,
 		uint256[8] calldata proof
 	) public {
-		console.log(
-			"checking proof not done yet. Signal: %s; Root: %s",
-			signal,
-			root
-		);
+		emit ProofVerificationStarted(signal, root);
 		// First, we make sure this person hasn't done this before
 		if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
 
-		console.log("verifying proof. Signal: %s; Root: %s", signal, root);
+		emit DuplicateVerificationSuccess(nullifierHash);
 		// We now verify the provided proof is valid and the user is verified by World ID
-		worldId.verifyProof(
-			root,
-			groupId,
-			abi.encodePacked(signal).hashToField(),
-			nullifierHash,
-			externalNullifier,
-			proof
-		);
+		try
+			worldId.verifyProof(
+				root,
+				groupId,
+				abi.encodePacked(signal).hashToField(),
+				nullifierHash,
+				externalNullifier,
+				proof
+			)
+		{
+			nullifierHashes[nullifierHash] = true;
+			emit ProofVerified(signal, root);
+		} catch {
+			emit ProofVerificationFailed();
+		}
 
 		// We now record the user has done this, so they can't do it again (proof of uniqueness)
-		nullifierHashes[nullifierHash] = true;
 
 		// Finally, execute your logic here, for example issue a token, NFT, etc...
 		// Make sure to emit some kind of event afterwards!
-		emit ProofVerified(signal, root);
+	}
+
+	function testVerify(
+		address signal,
+		uint256 root,
+		uint256 nullifierHash,
+		uint256[8] calldata proof
+	) public {
+		if (nullifierHashes[nullifierHash]) {
+			emit DuplicateNullifier(nullifierHash);
+		} else {
+			emit ProofVerified(signal, root);
+		}
 	}
 }

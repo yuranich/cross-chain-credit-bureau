@@ -1,0 +1,41 @@
+@startuml
+
+title Borrowing Sequence
+
+actor Borrower as B
+participant Lender as Len
+participant WorldID as WID
+participant Reporter as Rep
+participant Attester as Att
+participant LZ
+participant EAS
+
+group chain A
+    B -> Len++: I wanna borrow
+    B <-- Len--: please verify WorldID
+    B -> Len++: done
+    Len -> WID++: verify on chain
+    Len <-- WID--: verified
+    Len -> Len: verify no other loans!!!
+    Len -> Rep++: report the loan
+    B <-- Len--: it is yours!
+    Rep -> Rep: store details
+    Rep -> Att++--: attest cross-chain
+    Att -> LZ++: call endpoint
+end
+
+group chain B
+    Att <- LZ--: call attest on new chain
+    Att -> EAS++: store attestation
+    Att <-- EAS--
+    LZ <- Att--++: pass back UID
+    Att <- LZ--++: receive UID
+end
+
+group chain A
+    Rep <- Att--++: call for update 
+    Rep -> Rep: update details
+    deactivate Rep
+end
+
+@enduml

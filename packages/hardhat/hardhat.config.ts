@@ -71,6 +71,7 @@ const config: HardhatUserConfig = {
             accounts: [deployerPrivateKey],
         },
         optimismGoerli: {
+            chainId: 420,
             url: `https://opt-goerli.g.alchemy.com/v2/${providerApiKey}`,
             accounts: [deployerPrivateKey],
         },

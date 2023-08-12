@@ -5,22 +5,16 @@ import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit"
 import { BigNumber } from "ethers"
 import type { NextPage } from "next"
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi"
-import { BugAntIcon, MagnifyingGlassIcon, SparklesIcon } from "@heroicons/react/24/outline"
 import { MetaHeader } from "~~/components/MetaHeader"
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth"
+import { getTargetNetwork } from "~~/utils/scaffold-eth"
 
 const Lender: NextPage = () => {
-    const onSuccess = () => {
-        console.log("on success")
-    }
-    const handleVerify = () => {
-        console.log("handle verify")
-    }
-
     const { address } = useAccount()
     const [proof, setProof] = useState<ISuccessResult | null>(null)
 
     const { config } = usePrepareContractWrite({
+        chainId: getTargetNetwork().id,
         address: process.env.NEXT_PUBLIC_CONTRACT_ADDR as `0x${string}`,
         abi: ContractAbi,
         enabled: proof != null && address != null,
@@ -40,6 +34,13 @@ const Lender: NextPage = () => {
 
     const { write } = useContractWrite(config)
 
+    const handleSubmit = () => {
+        console.log(`handle submit. Config: ${JSON.stringify(config)}`)
+        if (write) {
+            write()
+        }
+    }
+
     return (
         <>
             <MetaHeader />
@@ -47,7 +48,7 @@ const Lender: NextPage = () => {
                 <div>
                     {address ? (
                         proof ? (
-                            <button className="btn submit" onClick={write}>
+                            <button className="btn submit" onClick={handleSubmit}>
                                 Lend
                             </button>
                         ) : (
