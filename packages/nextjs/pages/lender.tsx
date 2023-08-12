@@ -20,7 +20,7 @@ const Lender: NextPage = () => {
         enabled: proof != null && address != null,
         functionName: "verifyAndExecute",
         args: [
-            address!,
+            address || "0x0",
             proof?.merkle_root ? decode<bigint>("uint256", proof?.merkle_root ?? "") : BigInt(0),
             proof?.nullifier_hash ? decode<bigint>("uint256", proof?.nullifier_hash ?? "") : BigInt(0),
             proof?.proof
@@ -56,7 +56,7 @@ const Lender: NextPage = () => {
                                 signal={address}
                                 action="lend"
                                 onSuccess={setProof}
-                                app_id={process.env.NEXT_PUBLIC_APP_ID!}
+                                app_id={process.env.NEXT_PUBLIC_APP_ID || "app_id"}
                             >
                                 {({ open }) => (
                                     <button className="btn" onClick={open}>

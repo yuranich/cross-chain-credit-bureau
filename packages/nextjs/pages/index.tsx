@@ -51,8 +51,8 @@ const Home: NextPage = () => {
             <MetaHeader />
             <div className="flex items-center flex-col flex-grow pt-10 gap-6">
                 <IDKitWidget
-                    action={process.env.NEXT_PUBLIC_WLD_ACTION_NAME!}
-                    app_id={process.env.NEXT_PUBLIC_APP_ID!}
+                    action={process.env.NEXT_PUBLIC_WLD_ACTION_NAME || "lend"}
+                    app_id={process.env.NEXT_PUBLIC_APP_ID || "app_id"}
                     onSuccess={onSuccess}
                     handleVerify={handleProof}
                     credential_types={[CredentialType.Orb, CredentialType.Phone]}
