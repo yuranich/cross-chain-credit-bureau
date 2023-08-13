@@ -1,12 +1,14 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTokens } from "~~/hooks/borrowing/useTokens"
 
 interface BorrowingProps {
+    address?: string
     onComlete?: () => void
 }
 
-export function Borrowing({ onComlete }: BorrowingProps) {
+export function Borrowing({ address, onComlete }: BorrowingProps) {
     const tokens = useTokens()
+    const chainId = 420
     const [token, setToken] = useState("")
     const [value, setValue] = useState("")
 
@@ -19,6 +21,16 @@ export function Borrowing({ onComlete }: BorrowingProps) {
         console.log(token, value)
         onComlete?.()
     }
+
+    useEffect(() => {
+        fetch("/api/user-state-update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ address, chainId }),
+        })
+    }, [address, chainId])
 
     return (
         <div className="flex flex-col gap-10 w-1/3 mx-auto mt-10">

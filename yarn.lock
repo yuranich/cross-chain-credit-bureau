@@ -2776,6 +2776,7 @@ __metadata:
     autoprefixer: ^10.4.12
     clsx: ^2.0.0
     daisyui: ^2.31.0
+    date-fns: ^2.30.0
     eslint: ^8.15.0
     eslint-config-next: ^13.1.6
     eslint-config-prettier: ^8.5.0

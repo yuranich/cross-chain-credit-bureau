@@ -14,8 +14,8 @@ export const config = {
 export type OtherLoan = {
     amount: number
     token: string
-    from: Date
-    to: Date
+    from: number
+    to: number
 }
 
 type LoanEvent = {
@@ -42,7 +42,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<OtherL
                 state.otherLoans = true
             }
         }
-        res.status(200).send(resps.flat(1))
+        res.status(200).send(flatten)
     })
 }
 
@@ -76,7 +76,7 @@ async function checkEvent(address: string, event: LoanEvent, chainId: number): P
     if (topics[2] === address) {
         console.log("found user borrow!", address)
         const loan = await getReportDetails(address, topics[0], chainId)
-        if (loan.amount > 0 && loan.to.getTime() > Date.now()) {
+        if (loan.amount > 0 && loan.to > Date.now()) {
             console.log("Found active loan!")
             return loan
         }
@@ -95,13 +95,13 @@ async function getReportDetails(address: string, actionId: string, chainId: numb
         return {
             amount: details.amount,
             token: details.token,
-            from: new Date(details.fromDate),
-            to: new Date(details.toDate),
+            from: BigNumber.from(details.fromDate).toNumber(),
+            to: BigNumber.from(details.toDate).toNumber(),
         }
     } catch (err) {
         console.log("failed to get loan details. ", address, actionId)
     }
-    return { amount: 0, token: "", from: new Date(0), to: new Date(0) }
+    return { amount: 0, token: "", from: 0, to: 0 }
 }
 
 const abi = [

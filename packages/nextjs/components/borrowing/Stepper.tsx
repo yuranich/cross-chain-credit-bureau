@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Authentification } from "./Authentification"
 import { Borrowing } from "./Borrowing"
 import { Verification } from "./Verification"
@@ -14,8 +15,12 @@ enum BorrowingSteps {
 const STEPS = [BorrowingSteps.Auth, BorrowingSteps.Verify, BorrowingSteps.Borrow]
 
 export function Stepper() {
-    const { currentStep, currentStepIndex, goNextStep } = useStep(STEPS, BorrowingSteps.Borrow)
+    const { currentStep, currentStepIndex, goNextStep, resetState } = useStep(STEPS, BorrowingSteps.Verify)
     const { address } = useAccount()
+
+    useEffect(() => {
+        resetState()
+    }, [address, resetState])
 
     const renderCurrentStep = (step: BorrowingSteps) => {
         switch (step) {
@@ -24,7 +29,7 @@ export function Stepper() {
             case BorrowingSteps.Verify:
                 return <Verification address={address} onSuccess={goNextStep} />
             case BorrowingSteps.Borrow:
-                return <Borrowing />
+                return <Borrowing address={address} />
             default:
                 return null
         }

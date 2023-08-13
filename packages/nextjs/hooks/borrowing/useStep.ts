@@ -9,10 +9,15 @@ export function useStep<T>(steps: T[], initStep?: T) {
         setStepIndex(step => (step < steps.length - 2 ? step + 1 : step))
     }, [steps])
 
+    const resetState = useCallback(() => {
+        setStepIndex(0)
+    }, [])
+
     return {
         done: stepIndex === steps.length - 1,
         currentStepIndex: stepIndex,
         currentStep,
         goNextStep,
+        resetState,
     }
 }
