@@ -19,6 +19,14 @@ Uncollateralized lending is a growing narrative in crypto. This project aims to 
 
 ## Deployments
 
+| Network         | OmnichainLoanAttester                      | UncollateralizedLenderSample               |
+| --------------- | ------------------------------------------ | ------------------------------------------ |
+| Optimism        | 0x627dA616cBCFDa74ea6263d6E8e9549a79243123 | 0x1D40D3CCc8747339A7909e7661Be36F2385F1E55 |
+| Optimism Goerli | 0x9b34a8B1Ad8dBbf565C15A881a38dF0Fd542AcCF | 0xD99a95F81e2eeAd31C14099Cd23288153c4A1bF8 |
+| Mode Sepolia    | 0x5db6384f8bDABC36fe6f00Ac375E2c07D0d2456c | 0xcCe3E0BAeFb57e96B6a61aCd5119BdF5C0452178 |
+| Zora Testnet    | 0xcCe3E0BAeFb57e96B6a61aCd5119BdF5C0452178 | 0x645eaefA3dfE93b6140e4AB68113f56Fb1910Ca8 |
+| Base Testnet    | 0xC42e8977Ea5d89b58FEea41a06b36b464B336305 | 0xf5a34f0Ad2edd6c8Dedd8B2bc0e1caC86531Fea3 |
+
 ## Tech Design
 
 ![Lending Process](./lending_sequence.png)
