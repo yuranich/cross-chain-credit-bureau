@@ -1,3 +1,4 @@
+import { userStateStorage } from "./user-state-update"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 export const config = {
@@ -34,17 +35,14 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Verify
         verifyRes.json().then(wldResponse => {
             console.log(`Received ${verifyRes.status} response from World ID /verify endpoint:\n`, wldResponse)
             if (verifyRes.status == 200) {
-                // This is where you should perform backend actions based on the verified credential, such as setting a user as "verified" in a database
-                // For this example, we'll just return a 200 response and console.log the verified credential
                 console.log("Credential verified! This user's nullifier hash is: ", wldResponse.nullifier_hash)
+                // otherLoans setting to true first
+                userStateStorage.set(wldResponse.address, { nullifier: wldResponse.nullifier_hash, otherLoans: true })
                 res.status(verifyRes.status).send({
                     code: "success",
                     detail: "This action verified correctly!",
                 })
-                //   resolve(void 0);
             } else {
-                // This is where you should handle errors from the World ID /verify endpoint. Usually these errors are due to an invalid credential or a credential that has already been used.
-                // For this example, we'll just return the error code and detail from the World ID /verify endpoint.
                 res.status(verifyRes.status).send({ code: wldResponse.code, detail: wldResponse.detail })
             }
         })
