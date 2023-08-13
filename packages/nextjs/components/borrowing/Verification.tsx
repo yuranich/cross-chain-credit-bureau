@@ -1,3 +1,4 @@
+import { useState } from "react"
 import type { OtherLoan } from "~~/pages/api/covalent-verify"
 
 interface VerificationProps {
@@ -7,6 +8,8 @@ interface VerificationProps {
 }
 
 export function Verification({ address, onSuccess, onFailure }: VerificationProps) {
+    const [loans, setLoans] = useState<OtherLoan[]>([])
+
     const handleCovalent = async () => {
         try {
             const res: Response = await fetch("/api/covalent-verify", {
@@ -18,8 +21,14 @@ export function Verification({ address, onSuccess, onFailure }: VerificationProp
             })
             if (res.status == 200) {
                 const data: OtherLoan[] = await res.json()
+
+                if (data && data.length) {
+                    setLoans(data)
+                } else {
+                    onSuccess()
+                }
+
                 console.log("Successful response from backend:\n", data)
-                onSuccess()
             } else {
                 const error = await res.text()
                 throw new Error(`Error ${res.status} ${error || "Unknown error."}`)
