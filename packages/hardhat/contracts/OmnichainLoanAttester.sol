@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 pragma abicoder v2;
 
-import { IEAS, AttestationRequest, AttestationRequestData } from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
+import { IEAS, AttestationRequest, AttestationRequestData, RevocationRequest, RevocationRequestData } from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import { NO_EXPIRATION_TIME, EMPTY_UID } from "@ethereum-attestation-service/eas-contracts/contracts/Common.sol";
 import "@layerzerolabs/solidity-examples/contracts/lzApp/NonblockingLzApp.sol";
 import "./interfaces/ILoanActionStorer.sol";
@@ -59,6 +59,25 @@ contract OmnichainLoanAttester is NonblockingLzApp, ILoanActionStorer {
 		i_eas = _eas;
 		i_schema_uid = _schema_uid;
 		attestationChain = _attestationChain;
+	}
+
+	function estimateActionGasFee(
+		Loan memory loan,
+		Action action,
+		uint16 dstChainId
+	) external view returns (uint256) {
+		AttestationRecord memory record = AttestationRecord(
+			0,
+			uint8(action),
+			msg.sender,
+			loan.borrower,
+			loan.fromDate,
+			loan.toDate,
+			loan.amount,
+			loan.token
+		);
+		(uint256 nativeFee, uint256 zroFee) = estimateFees(dstChainId, record);
+		return nativeFee;
 	}
 
 	function reportLoanAction(
@@ -133,8 +152,8 @@ contract OmnichainLoanAttester is NonblockingLzApp, ILoanActionStorer {
 
 	function estimateFees(
 		uint16 dstChainId,
-		AttestationRecord calldata record
-	) public view returns (uint nativeFee, uint zroFee) {
+		AttestationRecord memory record
+	) public view returns (uint256 nativeFee, uint256 zroFee) {
 		bytes memory data = abi.encode(
 			record.actionId,
 			record.action,
@@ -220,6 +239,12 @@ contract OmnichainLoanAttester is NonblockingLzApp, ILoanActionStorer {
 		bytes32 uid = _attest(data);
 		uids.push(uid);
 		emit ActionAttested(uid, uint16(block.chainid));
+	}
+
+	function revokeAttestation(bytes32 uid) public onlyOwner {
+		i_eas.revoke(
+			RevocationRequest(i_schema_uid, RevocationRequestData(uid, 0))
+		);
 	}
 
 	function getLastUid() public view returns (bytes32) {

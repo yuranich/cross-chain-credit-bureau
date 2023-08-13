@@ -20,6 +20,12 @@ interface ILoanActionStorer {
 
 	function reportLoanAction(Loan memory loan, Action action) external payable;
 
+	function estimateActionGasFee(
+		Loan memory loan,
+		Action action,
+		uint16 dstChainId
+	) external view returns (uint256);
+
 	function getLoanDetails(
 		address user,
 		uint256 actionId

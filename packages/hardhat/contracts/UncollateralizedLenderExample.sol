@@ -5,8 +5,9 @@ pragma abicoder v2;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/ILoanActionStorer.sol";
+import "./LoanAccessControl.sol";
 
-contract UncollateralizedLenderStub {
+contract UncollateralizedLenderStub is LoanAccessControl {
 	struct Credit {
 		uint256 id;
 		uint256 fromDate;
@@ -25,14 +26,22 @@ contract UncollateralizedLenderStub {
 
 	error LIMIT_EXCEEDED(uint limit, uint256 amount);
 
-	event Lent(address borrower, uint256 amount, address token);
-	event Repaid(address borrower, uint256 amount, address token);
+	event Lent(
+		address indexed borrower,
+		uint256 indexed amount,
+		address indexed token
+	);
+	event Repaid(
+		address indexed borrower,
+		uint256 indexed amount,
+		address indexed token
+	);
 
 	constructor(ILoanActionStorer _storer) {
 		i_storer = _storer;
 	}
 
-	function lend(address token, uint256 amount) external payable {
+	function lend(address token, uint256 amount) external payable onlyBorrower {
 		uint8 dec = ERC20(token).decimals();
 		if (1000 ** dec < amount) revert LIMIT_EXCEEDED(1000 ** dec, amount);
 
@@ -67,7 +76,7 @@ contract UncollateralizedLenderStub {
 		);
 	}
 
-	function repay(uint256 amount) external {
+	function repay(uint256 amount) external onlyBorrower {
 		Credit storage current = credits[msg.sender][
 			credits[msg.sender].length - 1
 		];
@@ -75,6 +84,9 @@ contract UncollateralizedLenderStub {
 		emit Repaid(msg.sender, amount, current.token);
 
 		if (current.amountRepaid >= current.amount) {
+			// user no longer need borrower role
+			_revokeLoanApproval(msg.sender);
+
 			i_storer.reportLoanAction(
 				ILoanActionStorer.Loan(
 					0,
