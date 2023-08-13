@@ -1,9 +1,9 @@
-import { Abi, ExtractAbiEventNames } from "abitype";
-import { Log } from "viem";
-import { useContractEvent } from "wagmi";
-import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
-import { getTargetNetwork } from "~~/utils/scaffold-eth";
-import { ContractAbi, ContractName, UseScaffoldEventConfig } from "~~/utils/scaffold-eth/contract";
+import { Abi, ExtractAbiEventNames } from "abitype"
+import { Log } from "viem"
+import { useContractEvent } from "wagmi"
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth"
+import { getTargetNetwork } from "~~/utils/scaffold-eth"
+import { ContractAbi, ContractName, UseScaffoldEventConfig } from "~~/utils/scaffold-eth/contract"
 
 /**
  * @dev wrapper for wagmi's useContractEvent
@@ -13,20 +13,20 @@ import { ContractAbi, ContractName, UseScaffoldEventConfig } from "~~/utils/scaf
  * @param config.listener - the callback that receives events. If only interested in 1 event, call `unwatch` inside of the listener
  */
 export const useScaffoldEventSubscriber = <
-  TContractName extends ContractName,
-  TEventName extends ExtractAbiEventNames<ContractAbi<TContractName>>,
+    TContractName extends ContractName,
+    TEventName extends ExtractAbiEventNames<ContractAbi<TContractName>>,
 >({
-  contractName,
-  eventName,
-  listener,
-}: UseScaffoldEventConfig<TContractName, TEventName>) => {
-  const { data: deployedContractData } = useDeployedContractInfo(contractName);
-
-  return useContractEvent({
-    address: deployedContractData?.address,
-    abi: deployedContractData?.abi as Abi,
-    chainId: getTargetNetwork().id,
-    listener: listener as (logs: Log[]) => void,
+    contractName,
     eventName,
-  });
-};
+    listener,
+}: UseScaffoldEventConfig<TContractName, TEventName>) => {
+    const { data: deployedContractData } = useDeployedContractInfo(contractName)
+
+    return useContractEvent({
+        address: deployedContractData?.address,
+        abi: deployedContractData?.abi as Abi,
+        chainId: getTargetNetwork().id,
+        listener: listener as (logs: Log[]) => void,
+        eventName,
+    })
+}

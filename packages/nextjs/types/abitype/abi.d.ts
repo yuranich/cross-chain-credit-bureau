@@ -1,7 +1,7 @@
-import "abitype";
+import "abitype"
 
 declare module "abitype" {
-  export interface Config {
-    AddressType: string;
-  }
+    export interface Config {
+        AddressType: string
+    }
 }
