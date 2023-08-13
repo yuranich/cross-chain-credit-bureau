@@ -34,7 +34,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<OtherL
     if (!address) {
         res.status(400).send("Borrower address is required")
     }
-    Promise.all([processEvents(address, "optimism-goerli"), processEvents(address, "optimism-mainnet")]).then(resps => {
+    Promise.all([
+        processEvents(address, "optimism-goerli"),
+        processEvents(address, "optimism-mainnet"),
+        processEvents(address, "base-testnet"),
+        processEvents(address, "base-mainnet"),
+        processEvents(address, "zora-testnet"),
+    ]).then(resps => {
         const flatten = resps.flat(1)
         if (flatten.length > 0) {
             const state = userStateStorage.get(address)
