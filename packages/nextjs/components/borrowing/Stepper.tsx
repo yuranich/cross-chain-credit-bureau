@@ -8,7 +8,7 @@ import { useStep } from "~~/hooks/borrowing/useStep"
 
 enum BorrowingSteps {
     Auth = "Authentification",
-    Verify = "Varification",
+    Verify = "Verification",
     Borrow = "Borrowing",
 }
 

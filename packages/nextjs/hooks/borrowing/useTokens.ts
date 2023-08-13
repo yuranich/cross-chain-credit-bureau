@@ -3,9 +3,9 @@ import { useMemo } from "react"
 export function useTokens() {
     return useMemo(
         () => [
-            { name: "USDT", value: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58" },
-            { name: "USDC", value: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607" },
-            { name: "WBTC", value: "0x68f180fcCe6836688e9084f035309E29Bf0A2095" },
+            { name: "USDT", value: "0x5A0fe2a692297B4C605e703a79F94F765f872A03" },
+            { name: "USDC", value: "0x7996b1503E9F48A3F92C72151223CB59129F0f86" },
+            { name: "WBTC", value: "0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea" },
         ],
         [],
     )
