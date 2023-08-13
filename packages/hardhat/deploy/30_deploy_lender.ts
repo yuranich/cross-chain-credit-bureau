@@ -1,6 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
-import { NetAddrs } from "../config/addresses.config"
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and
@@ -8,7 +7,7 @@ import { NetAddrs } from "../config/addresses.config"
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const easSchemaRegistrar: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const lender: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -21,24 +20,22 @@ const easSchemaRegistrar: DeployFunction = async function (hre: HardhatRuntimeEn
   */
     const { deployer } = await hre.getNamedAccounts()
     const { deploy } = hre.deployments
-    const registryAddr = NetAddrs[hre.network.name].SCHEMA_REGISTRY
 
-    await deploy("EASSchemaRegistrar", {
+    const attester = await hre.ethers.getContract("OmnichainLoanAttester", deployer)
+
+    await deploy("UncollateralizedLenderSample", {
         from: deployer,
         // Contract constructor arguments
-        args: [registryAddr],
+        args: [attester.address],
         log: true,
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
         autoMine: true,
     })
-
-    // Get the deployed contract
-    // const yourContract = await hre.ethers.getContract("YourContract", deployer);
 }
 
-export default easSchemaRegistrar
+export default lender
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-easSchemaRegistrar.tags = ["EASSchemaRegistrar"]
+lender.tags = ["UncollateralizedLenderSample"]

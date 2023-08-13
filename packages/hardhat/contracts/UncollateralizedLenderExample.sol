@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/ILoanActionStorer.sol";
 import "./LoanAccessControl.sol";
 
-contract UncollateralizedLenderStub is LoanAccessControl {
+contract UncollateralizedLenderSample is LoanAccessControl {
 	struct Credit {
 		uint256 id;
 		uint256 fromDate;

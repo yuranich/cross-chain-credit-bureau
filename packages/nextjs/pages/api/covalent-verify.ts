@@ -71,15 +71,21 @@ async function processEvents(address: string, network: Chains): Promise<OtherLoa
 }
 
 async function checkEvent(address: string, event: LoanEvent, chainId: number): Promise<OtherLoan | "unrelated"> {
-    console.log(`event topics: ${event.raw_log_topics}`)
-    const topics = event.raw_log_topics.split(",").map(t => t.trim())
-    if (topics[2] === address) {
-        console.log("found user borrow!", address)
-        const loan = await getReportDetails(address, topics[0], chainId)
-        if (loan.amount > 0 && loan.to > Date.now()) {
-            console.log("Found active loan!")
-            return loan
+    try {
+        const topics = event.raw_log_topics.toString().split(",")
+        console.log(`event topics: ${event.raw_log_topics}`)
+        if (topics[1].endsWith(address)) {
+            console.log("found user borrow!", address)
+            const loan = await getReportDetails(address, topics[0], chainId)
+            if (loan.amount > 0 && loan.to > Date.now()) {
+                console.log("Found active loan!")
+                return loan
+            }
+        } else {
+            console.log(topics[1])
         }
+    } catch (err) {
+        console.log(err)
     }
     return "unrelated"
 }

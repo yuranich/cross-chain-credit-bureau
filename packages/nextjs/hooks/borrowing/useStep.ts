@@ -6,7 +6,7 @@ export function useStep<T>(steps: T[], initStep?: T) {
     const currentStep = useMemo(() => steps[stepIndex], [steps, stepIndex])
 
     const goNextStep = useCallback(() => {
-        setStepIndex(step => (step < steps.length - 2 ? step + 1 : step))
+        setStepIndex(step => (step < steps.length - 1 ? step + 1 : step))
     }, [steps])
 
     const resetState = useCallback(() => {

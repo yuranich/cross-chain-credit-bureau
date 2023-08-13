@@ -4,9 +4,9 @@ async function main() {
     const [deployer] = await hre.ethers.getSigners()
     console.log("Calling contract with the account: ", deployer.address)
 
-    const remoteAddr = "0x9b34a8B1Ad8dBbf565C15A881a38dF0Fd542AcCF"
-    const localAddr = "0x1DbdC0a71E267D2D94F400B2B620e22B1f0e256F"
-    const remoteChain = 10132
+    const localAddr = "0x9b34a8B1Ad8dBbf565C15A881a38dF0Fd542AcCF"
+    const remoteAddr = "0xC42e8977Ea5d89b58FEea41a06b36b464B336305"
+    const remoteChain = 10160
 
     const localContract = await hre.ethers.getContractAt("OmnichainLoanAttester", localAddr, deployer)
 

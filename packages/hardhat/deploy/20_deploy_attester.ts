@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
 import { NetAddrs } from "../config/addresses.config"
-import { tenderly } from "hardhat"
+import { ethers, tenderly } from "hardhat"
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and
@@ -22,9 +22,9 @@ const lzAttester: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
   */
     const { deployer } = await hre.getNamedAccounts()
     const { deploy } = hre.deployments
-    const easAddr = NetAddrs[hre.network.name].EAS
-    const schemaUid = NetAddrs[hre.network.name].CREDIT_REPORT_SCHEMA
-    const lzEndpoint = NetAddrs[hre.network.name].LZ_ENDPOINT
+    const easAddr = NetAddrs[hre.network.name].EAS || ethers.constants.AddressZero
+    const schemaUid = NetAddrs[hre.network.name].CREDIT_REPORT_SCHEMA || ethers.constants.HashZero
+    const lzEndpoint = NetAddrs[hre.network.name].LZ_ENDPOINT || ethers.constants.AddressZero
     const lzDestChain = NetAddrs[hre.network.name].LZ_DEST_CHAIN
 
     await deploy("OmnichainLoanAttester", {
@@ -42,16 +42,6 @@ const lzAttester: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
     await tenderly.verify({
         name: "OmnichainLoanAttester",
         address: attester.address,
-    })
-
-    await deploy("UncollateralizedLenderStub", {
-        from: deployer,
-        // Contract constructor arguments
-        args: [attester.address],
-        log: true,
-        // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-        // automatically mining the contract deployment transaction. There is no effect on live networks.
-        autoMine: true,
     })
 }
 

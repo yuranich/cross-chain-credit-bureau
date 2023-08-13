@@ -51,7 +51,7 @@ export function Authentification({ address, onSuccess }: AuthProps) {
                     ></path>
                 </svg>
                 <div className="flex-col justify-start items-start">
-                    <h3 className="font-bold">Please Login!</h3>
+                    <h3 className="font-bold">Please Verify Action!</h3>
                     <div className="text-xs">Before continue please pass authentification process</div>
                 </div>
             </div>
@@ -65,6 +65,7 @@ export function Authentification({ address, onSuccess }: AuthProps) {
                 </svg>
 
                 <IDKitWidget
+                    signal={address}
                     action={process.env.NEXT_PUBLIC_WLD_ACTION_NAME || "lend"}
                     app_id={process.env.NEXT_PUBLIC_APP_ID || "app_id"}
                     onSuccess={onSuccess}

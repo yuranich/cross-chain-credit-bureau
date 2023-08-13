@@ -19,6 +19,8 @@ const deployerPrivateKey =
 // If not set, it uses ours Etherscan default API key.
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW"
 
+const mainnetDeployerPK = process.env.MAINNET_DEPLOYER_PK || ""
+
 const config: HardhatUserConfig = {
     solidity: {
         version: "0.8.19",
@@ -67,8 +69,9 @@ const config: HardhatUserConfig = {
             accounts: [deployerPrivateKey],
         },
         optimism: {
+            chainId: 10,
             url: `https://opt-mainnet.g.alchemy.com/v2/${providerApiKey}`,
-            accounts: [deployerPrivateKey],
+            accounts: [mainnetDeployerPK],
         },
         optimismGoerli: {
             chainId: 420,
@@ -94,6 +97,25 @@ const config: HardhatUserConfig = {
             zksync: true,
             accounts: [deployerPrivateKey],
             verifyURL: "https://zksync2-mainnet-explorer.zksync.io/contract_verification",
+        },
+        base_testnet: {
+            chainId: 84531,
+            url: "https://goerli.base.org",
+            accounts: [deployerPrivateKey],
+            verifyURL: "https://goerli.basescan.org/api",
+        },
+        zora_testnet: {
+            chainId: 999,
+            url: "https://testnet.rpc.zora.energy",
+            accounts: [deployerPrivateKey],
+            verifyURL: "https://testnet.explorer.zora.energy/api",
+        },
+        mode_testnet: {
+            chainId: 919,
+            url: "https://sepolia.mode.network/",
+            accounts: [deployerPrivateKey],
+            verifyURL: "https://sepolia.explorer.mode.network/api",
+            gasPrice: 2500000000,
         },
     },
     verify: {
