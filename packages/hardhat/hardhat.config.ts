@@ -117,6 +117,12 @@ const config: HardhatUserConfig = {
             verifyURL: "https://sepolia.explorer.mode.network/api",
             gasPrice: 2500000000,
         },
+        base_mainnet: {
+            chainId: 8453,
+            url: "https://mainnet.base.org",
+            accounts: [mainnetDeployerPK],
+            verifyURL: "https://basescan.org/api",
+        },
     },
     verify: {
         etherscan: {

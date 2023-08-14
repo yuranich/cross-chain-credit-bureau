@@ -4,8 +4,8 @@ Innovative omnichain loan reporting and attesting service. It leverages proof of
 
 ## Contents
 
-- [About](#About)
-- [Deployments](#Deployments)
+- [About](#about)
+- [Deployments](#deployments)
 - [Tech Design](#tech-design)
 
 ## About
@@ -14,8 +14,8 @@ Uncollateralized lending is a growing narrative in crypto. This project aims to 
 
 - To find out if the user already has a loan on another blockchain or with another wallet.
 - Allow lender to give loan on one chain but attest it on another chain ( where EAS works).
-  At the same time, smart contracts and the application are designed in a way to protect lenders from users manipulating verification results before receiving a loan.
-  Diagrams showing how the app works will be on github repo.
+
+At the same time, smart contracts and the application are designed in a way to protect lenders from users manipulating verification results before receiving a loan.
 
 ## Deployments
 
@@ -26,6 +26,7 @@ Uncollateralized lending is a growing narrative in crypto. This project aims to 
 | Mode Sepolia    | 0x5db6384f8bDABC36fe6f00Ac375E2c07D0d2456c | 0xcCe3E0BAeFb57e96B6a61aCd5119BdF5C0452178 |
 | Zora Testnet    | 0xcCe3E0BAeFb57e96B6a61aCd5119BdF5C0452178 | 0x645eaefA3dfE93b6140e4AB68113f56Fb1910Ca8 |
 | Base Testnet    | 0xC42e8977Ea5d89b58FEea41a06b36b464B336305 | 0xf5a34f0Ad2edd6c8Dedd8B2bc0e1caC86531Fea3 |
+| Base Mainnet    | 0x46aafe52CE9434F2F7684b6f1b149B69BC0d2657 | 0x9849f2B122394513b55c56c5B629619F843108e3 |
 
 ## Tech Design
 
@@ -48,6 +49,14 @@ yarn install
 ```
 
 2. Fill in .env.local in `packages/nextjs` folder
+
+```
+NEXT_PUBLIC_APP_ID=<WLD app token>
+NEXT_PUBLIC_WLD_ACTION_NAME=<action in dev dashboard>
+NEXT_PUBLIC_WLD_API_BASE_URL=https://developer.worldcoin.org
+NEXT_PUBLIC_COVALENT_API_KEY=<your covalent key>
+NEXT_PUBLIC_PK=<your pk as the contract admin>
+```
 
 3. Run app locally.
 
