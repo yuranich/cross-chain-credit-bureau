@@ -46,6 +46,7 @@ const config: HardhatUserConfig = {
             forking: {
                 url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
                 enabled: true,
+                blockNumber: 18047803,
             },
         },
         mainnet: {
