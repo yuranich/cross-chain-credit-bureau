@@ -25,9 +25,9 @@ export function Stepper() {
     const renderCurrentStep = (step: BorrowingSteps) => {
         switch (step) {
             case BorrowingSteps.Auth:
-                return <Authentification address={address} onSuccess={goNextStep} />
+                return <Authentification address={address} onSuccess={goNextStep} onSkip={goNextStep} />
             case BorrowingSteps.Verify:
-                return <Verification address={address} onSuccess={goNextStep} />
+                return <Verification address={address} onSuccess={goNextStep} onSkip={goNextStep} />
             case BorrowingSteps.Borrow:
                 return <Borrowing address={address} />
             default:
