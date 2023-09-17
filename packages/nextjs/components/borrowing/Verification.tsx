@@ -6,9 +6,10 @@ interface VerificationProps {
     address?: string
     onSuccess: () => void
     onFailure?: (error: Error) => void
+    onSkip: () => void
 }
 
-export function Verification({ address, onSuccess, onFailure }: VerificationProps) {
+export function Verification({ address, onSuccess, onFailure, onSkip }: VerificationProps) {
     const [loans, setLoans] = useState<OtherLoan[]>([])
 
     const handleCovalent = async () => {
@@ -108,6 +109,9 @@ export function Verification({ address, onSuccess, onFailure }: VerificationProp
 
                 <button className="btn" onClick={handleCovalent}>
                     Verify
+                </button>
+                <button className="btn" onClick={onSkip}>
+                    Skip
                 </button>
             </div>
         </div>

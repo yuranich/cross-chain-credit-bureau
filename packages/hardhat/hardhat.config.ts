@@ -46,6 +46,7 @@ const config: HardhatUserConfig = {
             forking: {
                 url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
                 enabled: true,
+                blockNumber: 18047803,
             },
         },
         mainnet: {
@@ -116,6 +117,12 @@ const config: HardhatUserConfig = {
             accounts: [deployerPrivateKey],
             verifyURL: "https://sepolia.explorer.mode.network/api",
             gasPrice: 2500000000,
+        },
+        base_mainnet: {
+            chainId: 8453,
+            url: "https://mainnet.base.org",
+            accounts: [mainnetDeployerPK],
+            verifyURL: "https://basescan.org/api",
         },
     },
     verify: {

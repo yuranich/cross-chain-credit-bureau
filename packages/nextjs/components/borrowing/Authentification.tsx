@@ -5,9 +5,10 @@ import type { VerifyReply } from "~~/pages/api/worldcoin-verify"
 interface AuthProps {
     address?: string
     onSuccess: () => void
+    onSkip: () => void
 }
 
-export function Authentification({ address, onSuccess }: AuthProps) {
+export function Authentification({ address, onSuccess, onSkip }: AuthProps) {
     const handleVerify = async (result: ISuccessResult) => {
         console.log("Proof received from IDKit:\n", JSON.stringify(result))
         const reqBody = {
@@ -79,6 +80,9 @@ export function Authentification({ address, onSuccess }: AuthProps) {
                         </button>
                     )}
                 </IDKitWidget>
+                <button className="btn" onClick={onSkip}>
+                    Skip
+                </button>
             </div>
         </div>
     )

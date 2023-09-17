@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTokens } from "~~/hooks/borrowing/useTokens"
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth"
 
 interface BorrowingProps {
     address?: string
@@ -17,8 +18,23 @@ export function Borrowing({ address, onComlete }: BorrowingProps) {
         return token === wbtc?.value ? { max: 1, step: 0.00001, min: 0.00001 } : { min: 1, max: 1000, step: 1 }
     }, [token, tokens])
 
-    const handleSubmit = () => {
+    const { writeAsync, isLoading, isMining } = useScaffoldContractWrite({
+        contractName: "UncollateralizedLenderSample",
+        functionName: "lend",
+        args: [token, BigInt(value) * BigInt(1000000)],
+        // For payable functions, expressed in ETH
+        value: "0.001",
+        // The number of block confirmations to wait for before considering transaction to be confirmed (default : 1).
+        blockConfirmations: 1,
+        // The callback function to execute when the transaction is confirmed.
+        onBlockConfirmation: txnReceipt => {
+            console.log("Transaction hash", txnReceipt.transactionHash)
+        },
+    })
+
+    const handleSubmit = async () => {
         console.log(token, value)
+        await writeAsync()
         onComlete?.()
     }
 
